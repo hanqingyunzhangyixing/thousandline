@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="stylesheet" href="../css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/xadmin.js"></script>
+    <script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../js/loginFilter.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+    <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
+  </head>
+  <script type="text/javascript">
+   $(function() {
+          searchRoles();
+        })
+        function searchRoles() {
+			//alert( $("#roleName").val());
+          $("#roleInfo").datagrid({
+            method: 'post',
+            url: globalData.server + 'roles/findAll',
+			queryParams: {
+			    	roleName:$("#roleName").val()
+					
+				}
+          });
+        }	
+		
+		
+    	/* 按钮 */	
+    	function anniu(value, row, index){
+  		 return "<a onclick='updateRoles(" + index + ")'><i class='layui-icon'>&#xe642;</i></a>"
+  		        +"<a onclick='deleteRoles(" + index + ")'> <i class='layui-icon'>&#xe640;</i></a>";
+    		}
+      //点击修改按钮
+      function updateRoles(index) {
+  			var data = $("#roleInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+  			var row = data.rows[index];
+  			var id=row.id;
+			alert(id);
+  			var ind=layer.open({
+  				  type:2,
+  				  area:['600px','500px'],
+  				  offset:'100px',
+  				  shadeClose:true,
+  				  maxmin:true,
+  			      content: 'role-edit.html',
+  				  success: function(layero, index){
+  				  var iframe = window['layui-layer-iframe'+ind];
+  				  iframe.child(id);
+  				 }
+  			});
+  		}
+  		/* 点击删除按钮时 */
+  			function deleteRoles(index){
+  				layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+  					var data = $("#roleInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+  					var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+  					var id=row.id;
+  				 $.post(globalData.server+"roles/deleteRole?id="+id,function(res){
+  				     if(res==true){
+  				 		layer.alert("删除成功", {icon: 6},function () {
+  				 		     layer.close(index);
+  				 			window.location.reload();
+  				 		});
+  				     }else{
+  				         layer.alert("删除失败", {icon: 5},function () {
+  				             // 获得frame索引
+  				             var index = parent.layer.getFrameIndex(window.name);
+  				             //关闭当前frame
+  				             layer.close(index);
+  				         });
+  				     }
+  				 },'json');
+  				});
+  			}
+
+  </script>
+  <body>
+	  <div class="x-body">
+	     <div class="layui-row">
+	          <form class="layui-form layui-col-md12 x-so" id="aa">
+	            <div class="layui-inline">
+	                <label class="layui-form-label">角色名称</label>
+	                <div class="layui-inline">
+	                    <input type="text" placeholder="请输入角色名称" name="roleName" id="roleName" class="layui-input">
+	                </div>
+	            </div>
+	            
+	            <button class="layui-btn"  lay-submit="" lay-filter="sreach" onclick="searchRoles()"><i class="layui-icon">&#xe615;</i></button>
+	           
+				<button class="layui-btn"onclick="refresh()" title="刷新">
+	              <i class="layui-icon">ဂ</i></button>
+	          </form>
+	        </div>
+            <xblock>
+	         <button class="layui-btn" onclick="x_admin_show('添加角色','role-add.html')"><i class="layui-icon"></i>添加</button>
+			</xblock>
+   <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
+      		<table id="roleInfo" class="easyui-datagrid" title="角色信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+            <thead>
+            <tr>
+              <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
+             <!-- <th data-options="field:'roleId',title:'角色Id',width:100,align:'center'"></th> -->
+              <th data-options="field:'roleName', title:'角色名',width:100,align:'center'"></th>
+              <th data-options="field:'moduleId',title:'模块',width:100,align:'center'"></th>		
+      		 <th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
+            </tr>
+            </thead>
+          </table>
+        </div> 
+  </div>
+  </body>
+
+</html>
