@@ -18,35 +18,38 @@
     <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
-  <script>
+  <script type="text/javascript">
   layui.use('laydate', function(){
     var laydate = layui.laydate;
-    
     //执行一个laydate实例
     laydate.render({
-      elem: '#beginTime' //指定元素
+      elem: '#beginOrderCreateTime', //指定元素
+	  type: 'datetime'
     });
 	//执行一个laydate实例
 	laydate.render({
-	  elem: '#endTime' //指定元素
+	  elem: '#endOrderCreateTime', //指定元素
+	  type: 'datetime'
 	});
 	//执行一个laydate实例
 	laydate.render({
-	  elem: '#startTime' //指定元素
+	  elem: '#startOrderEndTime', //指定元素
+	  type: 'datetime'
 	});
 	//执行一个laydate实例
 	laydate.render({
-	  elem: '#endTime1' //指定元素
+	  elem: '#endOrderEndTime', //指定元素
+	  type: 'datetime'
 	});
   });
   </script>
   <script type="text/javascript">
+	  var tokenId = globalData.getToken();
     $(function() {
       searchOrder();
     })
 
     function searchOrder() {
-		alert($("#senderName").val());
       $("#orderInfo").datagrid({
         method: 'post',
         url: globalData.server + 'orders/queryOrderBypage',//调用数据接口
@@ -62,7 +65,8 @@
 				endOrderEndTime:$("#endOrderEndTime").val(),
 				packingUnit:$("#packingUnit").val(),
 				status:$("#status").val(),
-				cargoType:$("#cargoType").val()
+				cargoType:$("#cargoType").val(),
+				tokenId: tokenId
 			}
       });
     }
@@ -78,7 +82,69 @@
               +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
 	}
   </script>
-  
+  <script type="text/javascript">
+  		//导出选中的学生记录到excel表中
+  				function daoChu() {
+  					var ids = "";
+  					var row = $('#orderInfo').datagrid('getChecked');
+  					console.log("sssssss" + row.id);
+  					if(row && row.length > 0) {
+  						$.each(row, function(i, e) {
+  							console.log("ssssssaaaaa" + e.id)
+  							if(i == 0) {
+  								ids += e.id;
+  							} else {
+  								ids += "," + e.id;
+  							}
+  						}); 
+  						window.location.href = globalData.server+"orders/exportOrders?ids=" + ids+ "&tokenId=" + globalData.getToken();
+  					} else {
+  						$.messager.confirm('确认', '还没有选中学生,要导出所有吗！', function(r) {
+  							if(r) {
+  								window.location.href = globalData.server+"orders/exportOrders?tokenId=" + globalData.getToken();
+  							}
+  						});
+  					}
+  	
+  				}
+    </script>
+    	<script type="text/javascript">
+    			function daoRu(){
+    			$("#uploadWindow").window('open');
+    		}
+    		function upload() {
+    				var formData = new FormData();//表单数据对象				
+    				formData.append("file", $("#avatar").prop('files')[0] );//文件		
+    				parent.$.messager.progress({
+    									title : '提示',
+    									text : '正在拼命上传文件，请稍候...'
+    							});
+    				$.ajax({
+    					url: globalData.server+"orders/uploadOrder",
+    					type: 'POST',
+    					data: formData,
+    					dataType:'json',
+    					// 告诉jQuery不要去处理发送的数据
+    					processData: false,
+    					// 告诉jQuery不要去设置Content-Type请求头
+    					contentType: false,
+    					beforeSend: function() {
+    						console.log("正在拼命上传文件，请稍候...");
+    					},
+    					success: function(res) {
+    						if(res.success==true){
+    							layer.msg("上传成功");
+    							parent.$.messager.progress('close');
+    							$("#uploadWindow").window('close');	
+    							searchOrder(); //查询
+    						}else{
+    							layer.msg("提示消息","上传失败");
+    						}
+    					}          
+    					
+    				});
+    			}
+    	</script>
   <body>
 	  <div class="x-body">
 	     <div class="layui-row">
@@ -168,8 +234,8 @@
 						      </div>
 						  </div>
 				 
-				<button class="layui-btn"  lay-submit="" lay-filter="sreach" onclick="searchOrder()"><i class="layui-icon">&#xe615;</i></button>
-				<button class="layui-btn"onclick="refresh()" title="刷新">
+				<button class="layui-btn" type="button" onclick="searchOrder()"><i class="layui-icon">&#xe615;</i></button>
+				<button class="layui-btn" onclick="refresh()" title="刷新">
 				  <i class="layui-icon">ဂ</i></button>
 	          </form>
 	        </div>
@@ -179,8 +245,16 @@
 	          <button class="layui-btn layui-btn-normal"" onclick="daoRu()"><i class="layui-icon">&#xe61a;</i>导入</button>
 	          <button class="layui-btn layui-btn-warm" onclick="daoChu()"><i class="layui-icon">&#xe619;</i>导出</button> 
 			</xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;2500px">
-    <table id="orderInfo" class="easyui-datagrid" title="订单信息" data-options="rownumbers:true,height:'600px',width:'2000px',fitColumns:true,pageSize:5,singleSelect:true, showFooter: true,
+			
+			
+			
+			<div id="uploadWindow" class="easyui-window" title="导入Excel数据" style="padding: 10px;" data-options="iconCls:'icon-add',minimizable:false,maximizable:false,closed:true,doSize:false">
+							<input type="file" id="avatar" name="avatar">
+							<input id="uploadBtn" type="button" value="开始上传" onclick="upload()" />
+						</div>
+
+  <div class="easyui-layout" id="productImgs_list">
+    <table id="orderInfo" class="easyui-datagrid" title="订单信息" data-options="rownumbers:true,height:'600px',width:'100%',fitColumns:false,pageSize:5,singleSelect:true, showFooter: true,
            checkOnSelect:true,selectOnCheck:true,remoteSort:false,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>

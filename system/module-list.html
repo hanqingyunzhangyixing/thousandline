@@ -17,70 +17,100 @@
 	<script type="text/javascript" src="../js/loginFilter.js"></script>
     <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../lib/layui-v2.5.4/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
   </head>
-  <script type="text/javascript">
-    $(function() {
-      searchUsers();
-    })
-
-    function searchUsers() {
-      $("#userInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'users/findAll'//调用数据接口
-      });
-    }
-	/* 状态 */
-	function getstate(value, row, index){
-		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
-	}
-	/* 按钮 */
-	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
-	}
-  </script>
-  <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'userId',title:'用户Id',width:100,align:'center'"></th>
-        <th data-options="field:'userName',title:'用户名',width:100,align:'center'"></th>
-        <th data-options="field:'userSex',title:'性别',width:100,align:'center'"></th>
-        <th data-options="field:'userAge',title:'年龄',width:100,align:'center'"></th>
-        <th data-options="field:'userPhone',title:'手机号',width:100,align:'center'"></th>
-        <th data-options="field:'userEmail',title:'邮箱',width:100,align:'center'"></th>
-        <th data-options="field:'userImage',title:'头像',width:100,align:'center'"></th>
-        <th data-options="field:'isSignIn',title:'是否签到',width:100,align:'center'"></th>
-        <th data-options="field:'lastTime',title:'最后登录时间',width:100,align:'center'"></th>
-        <th data-options="field:'createTime',title:'创建时间',width:100,align:'center'"></th>
-        <th data-options="field:'isDelete',title:'是否删除',width:100,align:'center'"></th>
-        <th data-options="field:'roleId',title:'角色id',width:100,align:'center'"></th>
-		<th data-options="field:'state',title:'状态',width:100,align:'center',forrmatter: getstate"></th>
-		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
-  </body>
-
-</html>
+    
+     <style>
+         .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+             height: 34px;
+             line-height: 34px;
+             padding: 0 8px;
+         }
+     </style>
+	 
+	 <!-- 操作列 -->
+	 <script type="text/html" id="auth-state">
+	     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+	     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	 </script>
+	 
+	<!-- <script src="../lib/layui-v2.5.4/layui.js" charset="utf-8"></script> -->
+	 <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+	 <script>
+	     layui.use(['table', 'treetable'], function () {
+	         var $ = layui.jquery;
+	         var table = layui.table;
+	         var treetable = layui.treetable;
+	 
+	         // 渲染表格
+	         layer.load(2);
+	         treetable.render({
+	             treeColIndex: 1,
+	             treeSpid: -1,
+	             treeIdName: 'authorityId',
+	             treePidName: 'parentId',
+	             elem: '#munu-table',
+	             url: '../api/menus.json',
+	             page: false,
+	             cols: [[
+	                 {type: 'numbers'},
+	                 {field: 'authorityName', minWidth: 200, title: '权限名称'},
+	                 {field: 'authority', title: '权限标识'},
+	                 {field: 'menuUrl', title: '菜单url'},
+	                 {field: 'orderNumber', width: 80, align: 'center', title: '排序号'},
+	                 {
+	                     field: 'isMenu', width: 80, align: 'center', templet: function (d) {
+	                         if (d.isMenu == 1) {
+	                             return '<span class="layui-badge layui-bg-gray">按钮</span>';
+	                         }
+	                         if (d.parentId == -1) {
+	                             return '<span class="layui-badge layui-bg-blue">目录</span>';
+	                         } else {
+	                             return '<span class="layui-badge-rim">菜单</span>';
+	                         }
+	                     }, title: '类型'
+	                 },
+	                 {templet: '#auth-state', width: 120, align: 'center', title: '操作'}
+	             ]],
+	             done: function () {
+	                 layer.closeAll('loading');
+	             }
+	         });
+	 
+	         $('#btn-expand').click(function () {
+	             treetable.expandAll('#munu-table');
+	         });
+	 
+	         $('#btn-fold').click(function () {
+	             treetable.foldAll('#munu-table');
+	         });
+	 
+	         //监听工具条
+	         table.on('tool(munu-table)', function (obj) {
+	             var data = obj.data;
+	             var layEvent = obj.event;
+	             if (layEvent === 'del') {
+	                 layer.msg('删除' + data.id);
+	             } else if (layEvent === 'edit') {
+	                 layer.msg('修改' + data.id);
+	             }
+	         });
+	     });
+	 </script>
+ </head>
+ <body>
+ <div class="layuimini-container">
+     <div class="layuimini-main">
+         <div>
+             <div class="layui-btn-group">
+                 <button class="layui-btn" id="btn-expand">全部展开</button>
+                 <button class="layui-btn" id="btn-fold">全部折叠</button>
+             </div>
+             <table id="munu-table" class="layui-table" lay-filter="munu-table"></table>
+         </div>
+     </div>
+ </div>
+ 
+ </body>
+ </html>

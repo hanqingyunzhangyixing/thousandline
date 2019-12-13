@@ -18,15 +18,43 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
   <script type="text/javascript">
-   $(function() {
-         searchUsers();
+  layui.use('laydate', function(){
+    var laydate = layui.laydate;
+    //执行一个laydate实例
+    laydate.render({
+      elem: '#beginUserCreateTime' ,//指定元素
+	   type: 'datetime'
+    });
+	//执行一个laydate实例
+	laydate.render({
+	  elem: '#endUserCreateTime' ,//指定元素
+	   type: 'datetime'
+	});
+  });
+  </script>
+  
+  <script type="text/javascript">
+	  var tokenId = globalData.getToken();
+      $(function() {
+        $("#userInfo").datagrid({
+          method: 'post',
+          url: globalData.server + 'users/findAll',//调用数据接口
+		  queryParams: {
+		  		tokenId: tokenId
+		  				}
+        });
        });
    
        function searchUsers() {
-         $("#userInfo").datagrid({
-           method: 'post',
-           url: globalData.server + 'users/findAll'//调用数据接口
-         });
+         $("#userInfo").datagrid('load',{
+           userName:$("#userName").val(),
+		   userPhone:$("#userPhone").val(),
+		   beginUserCreateTime:$("#beginUserCreateTime").val(),
+		   endUserCreateTime:$("#endUserCreateTime").val(),
+		   userSex:$("#userSex").val(),
+		   isLock:$("#isLock").val(),
+           tokenId: tokenId
+          }); 
        }
 	
 	/* 按钮 */
@@ -83,23 +111,74 @@
 	  <div class="x-body">
 	        <div class="layui-row">
 	          <form class="layui-form layui-col-md12 x-so">
-	           
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+	           <div class="layui-inline">
+	               <label class="layui-form-label">用户名称</label>
+	               <div class="layui-inline">
+	                   <input type="text" placeholder="请输入用户名称" name="userName" id="userName" class="layui-input">
+	               </div>
+	           </div>
+			   
+			   
+			   <div class="layui-inline">
+			       <label class="layui-form-label">手机号</label>
+			       <div class="layui-inline">
+			           <input type="text" placeholder="请输入手机号" name="userPhone" id="userPhone" class="layui-input">
+			       </div>
+			   </div>
+			   
+			   <div class="layui-inline">
+			     <label class="layui-form-label">创建时间</label>
+			     <input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="beginUserCreateTime">
+			     ~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endUserCreateTime">
+			   </div>
+			   
+			   <div class="layui-input-inline">
+			       <label class="layui-form-label">性别</label>
+			       <div class="layui-input-inline">
+			           <select id="userSex" name="userSex">
+			               <option value="">请选择</option>
+			               <option value="男">男</option>
+			               <option value="女">女</option>
+			           </select>
+			       </div>
+			   </div>
+			   
+			   <div class="layui-input-inline">
+			       <label class="layui-form-label">用户锁定</label>
+			       <div class="layui-input-inline">
+			           <select id="isLock" name="isLock">
+			               <option value="">请选择</option>
+			               <option value="1">是</option>
+			               <option value="0">否</option>
+			           </select>
+			       </div>
+			   </div>
+			  <!-- 
+			   <div class="layui-input-inline">
+			       <label class="layui-form-label">排序</label>
+			       <div class="layui-input-inline">
+			           <select id="orderBy" name="orderBy">
+			               <option value="">请选择</option>
+			               <option value="userName">用户名</option>
+			               <option value="createTime">创建时间</option>
+						   <option value="lastTime">最后一次登录时间</option>
+			           </select>
+			       </div>
+			   </div> -->
+	            <button class="layui-btn" type="button" onclick="searchUsers()"><i class="layui-icon">&#xe615;</i></button>
+				<button class="layui-btn" onclick="refresh()" title="刷新">
+				  <i class="layui-icon">ဂ</i></button>
 	          </form>
 	        </div>
 	        <xblock>
 	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
 	          <button class="layui-btn" onclick="x_admin_show('添加用户','user-add.html',600,400)"><i class="layui-icon"></i>添加</button>
 	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+  <div class="easyui-layout" id="productImgs_list">
+    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,height:'600px',width:'100%',fitColumns:false,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>
         <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <!-- <th data-options="field:'userId',title:'用户Id',width:100,align:'center'"></th> -->
         <th data-options="field:'userName',title:'用户名',width:100,align:'center'"></th>
         <th data-options="field:'userSex',title:'性别',width:100,align:'center'"></th>
         <th data-options="field:'userAge',title:'年龄',width:100,align:'center'"></th>
@@ -113,12 +192,10 @@
 		<th data-options="field:'lockTime',title:'锁定时间',width:100,align:'center'"></th>
 		<th data-options="field:'psdWrongTime',title:'密码错误次数',width:100,align:'center'"></th>
 		<th data-options="field:'unLockTime',title:'解锁时间',width:100,align:'center'"></th>
-        <!-- <th data-options="field:'isDelete',title:'是否删除',width:100,align:'center'"></th> -->
         <th data-options="field:'roleId',title:'角色',width:100,align:'center'"></th>
-		<!-- <th data-options="field:'state',title:'状态',width:100,align:'center',forrmatter: getstate"></th> -->
 		<th data-options="field:'caozuo',title:'操作',width:140,align:'center',formatter: anniu"></th>
       </tr>
-      </thead>
+      </thead> 
     </table>
   </div>
   </div>

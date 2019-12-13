@@ -19,43 +19,123 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
   <script type="text/javascript">
+	  var tokenId=globalData.getToken();
     $(function() {
-      searchDrivers();
+     $("#driverInfo").datagrid({
+       method: 'post',
+       url: globalData.server + 'drivers/findAll',//调用数据接口
+	   queryParams:{
+		   tokenId:tokenId
+	   }
+     });
     })
 
     function searchDrivers() {
-      $("#driverInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'drivers/findAll'//调用数据接口
-      });
+         $("#driverInfo").datagrid('load',{
+           driverName:$("#driverName").val(),
+		   driverSex:$("#driverSex").val(),
+		   workStatus:$("#workStatus").val(),
+           tokenId: tokenId
+          }); 
     }
 	
-	/* 按钮 */
-	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
-	}
+/* 按钮 */	
+	  function anniu(value, row, index){
+	  return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow("+index+")'><i class='layui-icon'>&#xe642;</i></a>"
+			 +" <a title='删除' onclick='member_del("+index+")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i>";
+		}
+function adminShow(index){
+						//将当前行数据填入表单
+						var data = $("#driverInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+						var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+						var id=row.id;
+						var ind=layer.open({
+							type:2,
+							area:['600px','500px'],
+							offset:'100px',
+							shadeClose:true,
+							maxmin:true,
+							content:'driver-edit.html',
+							success: function (layero, ind) {
+								// 获取子页面的iframe
+								var iframe = window['layui-layer-iframe' + ind];
+								// 向子页面的全局函数child传参
+								iframe.child(id);
+							   }
+						 });
+					} 
+	/* 点击删除按钮时 */
+	 function member_del(index){
+		layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+			var data = $("#driverInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id=row.id;
+		 $.post(globalData.server+"drivers/deleteDriver?id="+id,function(res){
+			 if(res==true){
+				layer.alert("删除成功", {icon: 6},function () {
+					 layer.close(index);
+					 window.location.reload();
+				});
+			 }else{
+				 layer.alert("删除失败", {icon: 5},function () {
+					 // 获得frame索引
+					 var index = parent.layer.getFrameIndex(window.name);
+					 //关闭当前frame
+					 layer.close(index);
+				 });
+			 }
+		 },'json');
+		});
+	} 
+
+	
+	
+	
   </script>
   <body>
 	  <div class="x-body">
 	     <div class="layui-row">
 	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+	            <div class="layui-inline">
+	                <label class="layui-form-label">司机姓名</label>
+	                <div class="layui-inline">
+	                    <input type="text" placeholder="请输入司机姓名" name="driverName" id="driverName" class="layui-input">
+	                </div>
+	            </div>
+				<div class="layui-input-inline">
+				    <label class="layui-form-label">司机性别</label>
+				    <div class="layui-input-inline">
+				        <select id="driverSex" name="driverSex">
+				            <option value="">请选择</option>
+				            <option value="男">男</option>
+				            <option value="女">女</option>
+				        </select>
+				    </div>
+				</div>
+				<div class="layui-input-inline">
+				    <label class="layui-form-label">工作状态</label>
+				    <div class="layui-input-inline">
+				        <select id="workStatus" name="workStatus">
+				            <option value="">请选择</option>
+				            <option value="0">未运货</option>
+				            <option value="1">运货中</option>
+							<option value="2">休息</option>
+							<option value="3">请假</option>
+				        </select>
+				    </div>
+				</div>
+				
+	           <button class="layui-btn" type="button" onclick="searchDrivers()"><i class="layui-icon">&#xe615;</i></button>
+	           <button class="layui-btn" onclick="refresh()" title="刷新">
+	             <i class="layui-icon">ဂ</i></button>
 	          </form>
 	        </div>
 	        <xblock>
 	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+	          <button class="layui-btn" onclick="x_admin_show('添加司机','driver-add.html',600,400)"><i class="layui-icon"></i>添加</button>
 	        </xblock>
   <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="driverInfo" class="easyui-datagrid" title="司机信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+    <table id="driverInfo" class="easyui-datagrid" title="司机信息" data-options="rownumbers:true,height:'60%',width:'100%',fitColumns:false,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>
        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>

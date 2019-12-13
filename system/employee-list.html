@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html>
-  
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>欢迎页面-X-admin2.0</title>
@@ -19,62 +18,183 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
   <script type="text/javascript">
+  layui.use('laydate', function(){
+    var laydate = layui.laydate;
+    //执行一个laydate实例
+    laydate.render({
+      elem: '#beginBirthday' ,//指定元素
+	   type: 'datetime'
+    });
+  	//执行一个laydate实例
+  	laydate.render({
+  	  elem: '#endBirthday' ,//指定元素
+	   type: 'datetime'
+  	});
+  	//执行一个laydate实例
+  	laydate.render({
+  	  elem: '#beginHiredate' ,//指定元素
+	  type: 'datetime'
+  	});
+  	//执行一个laydate实例
+  	laydate.render({
+  	  elem: '#endHiredate' ,//指定元素
+	  type: 'datetime'
+  	});
+  });
+  </script>
+  <script type="text/javascript">
+	var tokenId = globalData.getToken();
     $(function() {
-      searchUsers();
+      $("#employeeInfo").datagrid({
+        method: 'post',
+        url: globalData.server + 'employee/findAll',//调用数据接口
+		queryParams: {
+			tokenId: tokenId
+					}
+      });
     })
 
-    function searchUsers() {
-      $("#userInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'users/findAll'//调用数据接口
-      });
+/* 多条件查询 */
+    function searchEmployee() {
+      $("#employeeInfo").datagrid('load',{
+         employeeName:$("#employeeName").val(),
+		 employeePhone:$("#employeePhone").val(),
+		 employeeSex:$("#employeeSex").val(),
+		 beginBirthday:$("#beginBirthday").val(),
+		 endBirthday:$("#endBirthday").val(),
+		 beginHiredate:$("#beginHiredate").val(),
+		 endHiredate:$("#endHiredate").val(),
+		 tokenId:tokenId
+       }); 
     }
-	/* 状态 */
-	function getstate(value, row, index){
-		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
-	}
-	/* 按钮 */
+	
+	/* 操作按钮 */
 	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
+		return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow("+index+")'><i class='layui-icon'>&#xe642;</i></a>"
+	          +" <a title='删除' onclick='member_del("+index+")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i>";
+	}
+	
+	
+	/* 点击修改按钮时 */
+	function adminShow(index){
+		//将当前行数据填入表单
+		var data = $("#employeeInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+		var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+		var id=row.id;
+		var ind=layer.open({
+					type:2,
+					area:['600px','500px'],
+					offset:'100px',
+					shadeClose:true,
+					maxmin:true,
+					content:'employee-edit.html',
+					success: function (layero, ind) {
+							// 获取子页面的iframe
+							var iframe = window['layui-layer-iframe' + ind];
+							// 向子页面的全局函数child传参
+							iframe.child(id);
+					     }
+				 });
+	}
+	
+	
+	
+	/* 点击删除按钮时 */
+	function member_del(index){
+		alert(index);
+		layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+			var data = $("#employeeInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id=row.id;
+		 $.post(globalData.server+"/employee/deleteEmployee",{id:id,tokenId:tokenId},function(res){
+		     if(res==true){
+		 		layer.alert("删除成功", {icon: 6},function () {
+		 		     layer.close(index);
+		 			window.location.reload();
+		 		});
+		     }else{
+		         layer.alert("删除失败", {icon: 5},function () {
+		             // 获得frame索引
+		             var index = parent.layer.getFrameIndex(window.name);
+		             //关闭当前frame
+		             layer.close(index);
+		         });
+		     }
+		 },'json');
+		});
 	}
   </script>
   <body>
 	  <div class="x-body">
 	     <div class="layui-row">
 	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+	           <div class="layui-inline">
+	               <label class="layui-form-label">员工姓名</label>
+	               <div class="layui-inline">
+	                   <input type="text" placeholder="请输入员工姓名" name="employeeName" id="employeeName" class="layui-input">
+	               </div>
+	           </div>
+	           
+	           <div class="layui-inline">
+	               <label class="layui-form-label">手机号</label>
+	               <div class="layui-inline">
+	                   <input type="text" placeholder="请输入手机号" name="employeePhone" id="employeePhone" class="layui-input">
+	               </div>
+	           </div>
+	           
+	           <div class="layui-inline">
+	             <label class="layui-form-label">生日</label>
+	             <input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="beginBirthday">
+	             ~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endBirthday">
+	           </div>
+			   
+			   <div class="layui-inline">
+			     <label class="layui-form-label">入职时间</label>
+			     <input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="beginHiredate">
+			     ~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endHiredate">
+			   </div>
+	           
+	           <div class="layui-input-inline">
+	               <label class="layui-form-label">性别</label>
+	               <div class="layui-input-inline">
+	                   <select id="employeeSex" name="employeeSex">
+	                       <option value="">请选择</option>
+	                       <option value="男">男</option>
+	                       <option value="女">女</option>
+	                   </select>
+	               </div>
+	           </div>
+	            <button class="layui-btn"  type="button" onclick="searchEmployee()"><i class="layui-icon">&#xe615;</i></button>
+				<button class="layui-btn" onclick="refresh()" title="刷新">
+				  <i class="layui-icon">ဂ</i></button>
 	          </form>
 	        </div>
 	        <xblock>
 	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+	          <button class="layui-btn" onclick="x_admin_show('添加员工','employee-add.html',600,400)"><i class="layui-icon"></i>添加</button>
 	        </xblock>
   <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+    <table id="employeeInfo" class="easyui-datagrid" title="员工信息" data-options="fitColumns:false,rownumbers:true,width:'100%',pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>
         <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'userId',title:'用户Id',width:100,align:'center'"></th>
-        <th data-options="field:'userName',title:'用户名',width:100,align:'center'"></th>
-        <th data-options="field:'userSex',title:'性别',width:100,align:'center'"></th>
-        <th data-options="field:'userAge',title:'年龄',width:100,align:'center'"></th>
-        <th data-options="field:'userPhone',title:'手机号',width:100,align:'center'"></th>
-        <th data-options="field:'userEmail',title:'邮箱',width:100,align:'center'"></th>
-        <th data-options="field:'userImage',title:'头像',width:100,align:'center'"></th>
-        <th data-options="field:'isSignIn',title:'是否签到',width:100,align:'center'"></th>
-        <th data-options="field:'lastTime',title:'最后登录时间',width:100,align:'center'"></th>
-        <th data-options="field:'createTime',title:'创建时间',width:100,align:'center'"></th>
-        <th data-options="field:'isDelete',title:'是否删除',width:100,align:'center'"></th>
-        <th data-options="field:'roleId',title:'角色id',width:100,align:'center'"></th>
-		<th data-options="field:'state',title:'状态',width:100,align:'center',forrmatter: getstate"></th>
+        <th data-options="field:'employeeNo',title:'员工工号',width:100,align:'center'"></th>
+        <th data-options="field:'employeeName',title:'员工姓名',width:100,align:'center'"></th>
+        <th data-options="field:'employeeSex',title:'员工性别',width:100,align:'center'"></th>
+        <th data-options="field:'employeeAge',title:'员工年龄',width:100,align:'center'"></th>
+        <th data-options="field:'employeePhone',title:'员工手机号',width:100,align:'center'"></th>
+        <th data-options="field:'hiredate',title:'入职时间',width:100,align:'center'"></th>
+        <th data-options="field:'birthday',title:'生日',width:100,align:'center'"></th>
+        <th data-options="field:'image',title:'头像',width:100,align:'center'"></th>
+        <th data-options="field:'email',title:'电子邮件',width:100,align:'center'"></th>
+        <th data-options="field:'identityCard',title:'身份证号',width:100,align:'center'"></th>
+        <th data-options="field:'address',title:'住址',width:100,align:'center'"></th>
+        <th data-options="field:'speciality',title:'学历',width:100,align:'center'"></th>
+		<th data-options="field:'salary',title:'工资',width:100,align:'center'"></th>
+		<th data-options="field:'jiXiaoSalary',title:'绩效工资',width:100,align:'center'"></th>
+		<th data-options="field:'reward',title:'奖金',width:100,align:'center'"></th>
+		<th data-options="field:'departNo',title:'所属部门',width:100,align:'center'"></th>
+		<th data-options="field:'remark',title:'备注',width:100,align:'center'"></th>
 		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
       </tr>
       </thead>

@@ -33,12 +33,10 @@
 		          <span class="x-red">*</span>密码
 		      </label>
 		      <div class="layui-input-inline">
-		          <input type="password" id="password" name="password" required="" lay-verify="pass"
+		          <input type="text" id="password" name="password" required="" lay-verify="pass"
 		          autocomplete="off" class="layui-input">
 		      </div>
-		    <!--  <div class="layui-form-mid layui-word-aux">
-		         最低五个字符
-		      </div> -->
+		   
 		  </div>
 		  <div class="layui-form-item">
 		      <label for="userSex" class="layui-form-label">
@@ -46,6 +44,7 @@
 		      </label>
 		      <div class="layui-input-inline">
 		          <select id="userSex" name="userSex" class="valid">
+					<option value="">--请选择--</option>
 		            <option value="男">男</option>
 		            <option value="女">女</option>
 		          </select>

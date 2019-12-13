@@ -19,25 +19,30 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
   <script type="text/javascript">
+	  var tokenId=globalData.getToken();
     $(function() {
-      searchCars();
+      $("#carInfo").datagrid({
+        method: 'post',
+        url: globalData.server + 'cars/findAll',//调用数据接口
+		queryParams: {
+			tokenId: tokenId
+					}
+      });
     })
 
     function searchCars() {
-      $("#carInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'cars/findAll'//调用数据接口
-      });
+      $("#carInfo").datagrid('load',{
+        carNumber:$("#carNumber").val(),
+		carNo:$("#carNo").val(),
+		cartype:$("#cartype").val(),
+		status:$("#status").val(),
+        tokenId: tokenId
+       }); 
     }
-	/* 状态 */
-	function getstate(value, row, index){
-		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
-	}
+	
 	/* 按钮 */
 	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
+		return "<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
               +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
 	}
   </script>
@@ -45,17 +50,51 @@
 	  <div class="x-body">
 	     <div class="layui-row">
 	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+               <div class="layui-inline">
+	               <label class="layui-form-label">车牌号</label>
+	               <div class="layui-inline">
+	                   <input type="text" placeholder="请输入车牌号" name="carNumber" id="carNumber" class="layui-input">
+	               </div>
+	           </div>
+			   <div class="layui-inline">
+			       <label class="layui-form-label">车辆编号</label>
+			       <div class="layui-inline">
+			           <input type="text" placeholder="请输入车辆编号" name="carNo" id="carNo" class="layui-input">
+			       </div>
+			   </div>
+			  
+			   
+			   <div class="layui-input-inline">
+			       <label class="layui-form-label">车辆类型</label>
+			       <div class="layui-input-inline">
+			           <select id="cartype" name="userSex">
+			               <option value="">请选择</option>
+			               <option value="货车">货车</option>
+			               <option value="半挂">半挂</option>
+			           </select>
+			       </div>
+			   </div>
+			   
+			   <div class="layui-input-inline">
+			       <label class="layui-form-label">状态</label>
+			       <div class="layui-input-inline">
+			           <select id="status" name="status">
+			               <option value="">请选择</option>
+			               <option value="0">未工作</option>
+			               <option value="1">工作中</option>
+						   <option value="2">工作完成</option>
+			           </select>
+			       </div>
+			   </div>
+			 
+	            <button class="layui-btn" type="button" onclick="searchCars()"><i class="layui-icon">&#xe615;</i></button>
+				<button class="layui-btn" onclick="refresh()" title="刷新">
+				  <i class="layui-icon">ဂ</i></button>
 	          </form>
 	        </div>
 	        <xblock>
 	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+	          <button class="layui-btn" onclick="x_admin_show('添加车辆','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
 	        </xblock>
   <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
     <table id="carInfo" class="easyui-datagrid" title="车辆信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
@@ -69,7 +108,7 @@
         <th data-options="field:'carType',title:'车辆类型',width:120,align:'center'"></th>
         <th data-options="field:'safeTime',title:'车辆保险日期',width:160,align:'center'"></th>
         <th data-options="field:'carMasterName',title:'车主姓名',width:160,align:'center'"></th>
-        <th data-options="field:'carMasterPhone',title:'车主电话',width:120,align:'center',forrmatter: getstate"></th>
+        <th data-options="field:'carMasterPhone',title:'车主电话',width:120,align:'center'"></th>
         <th data-options="field:'identityCard',title:'车主证件号',width:140,align:'center'"></th>
         <th data-options="field:'carMasterAddress',title:'车主所在地',width:150,align:'center'"></th>
         <th data-options="field:'status',title:'车辆运输状态',width:150,align:'center'"></th>
