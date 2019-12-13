@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="stylesheet" href="../css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/xadmin.js"></script>
+	<script type="text/javascript" src="../js/global.js"></script>
+  </head>
+<body>
+		<div class="x-body">
+		       <form class="layui-form" id="circuitsEdit">
+			  <div class="layui-form-item">
+			      <label for="circuitsNo" class="layui-form-label" readonly="true">
+			          <span class="x-red">*</span>线路编号
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="circuitsNo" name="circuitsNo" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="circuitsName" class="layui-form-label">
+			          <span class="x-red">*</span>线路名称
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="circuitsName" name="circuitsName" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="beginProvince" class="layui-form-label">
+			          <span class="x-red">*</span>出发地所属省份
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="beginProvince" name="beginProvince" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="beginCity" class="layui-form-label">
+			          <span class="x-red">*</span>出发地所属城市
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="beginCity" name="beginCity" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="beginRegion" class="layui-form-label">
+			          <span class="x-red">*</span>出发地所属县区
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="beginRegion" name="beginRegion" required=""
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="endProvince" class="layui-form-label">
+			          目的地所属省份
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="endProvince" name="endProvince" 
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  
+			  
+			  <div class="layui-form-item">
+			      <label for="endCity" class="layui-form-label">
+			          <span class="x-red">*</span>目的地所属城市
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="endCity" name="endCity" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="endRegion" class="layui-form-label">
+			          <span class="x-red">*</span>目的地所属县区
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="endRegion" name="endRegion" required=""
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  
+			  
+			  
+			  <div class="layui-form-item">
+			      <label for="beginStation" class="layui-form-label">
+			          <span class="x-red">*</span>出发站
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="beginStation" name="beginStation" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="endStation" class="layui-form-label">
+			          <span class="x-red">*</span>收货站
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="endStation" name="endStation" required=""
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  
+			  <div class="layui-form-item">
+			      <label for="kilometres" class="layui-form-label">
+			          <span class="x-red">*</span>公里数
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="kilometres" name="kilometres" required="required"
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			      <label for="driverId" class="layui-form-label">
+			          <span class="x-red">*</span>司机名称
+			      </label>
+			      <div class="layui-input-inline">
+			          <input type="text" id="driverId" name="driverId" required=""
+			          autocomplete="off" class="layui-input">
+			      </div>
+			  </div>
+				<div class="layui-form-item">
+					<label for="L_repass" class="layui-form-label">
+					</label>
+					<button class="layui-btn" lay-filter="add" lay-submit="" type="submit">
+						修改
+					</button>
+				</div>
+			</form>
+		</div>
+		<script type="text/javascript">
+			function child(id) {
+			    	     $.post(globalData.server+"circuits/getById?id=" + id,
+					   $("#circuitsEdit").serialize(),
+						function(res){
+							$("#circuitsNo").val(res.circuitsNo);
+							$("#circuitsName").val(res.circuitsName);
+							$("#beginProvince").val(res.beginProvince);
+							$("#beginCity").val(res.beginCity);
+							$("#beginRegion").val(res.beginRegion);
+							$("#endProvince").val(res.endProvince);
+							$("#endCity").val(res.endCity);
+							$("#endRegion").val(res.endRegion);
+							$("#beginStation").val(res.beginStation);
+							$("#endStation").val(res.endStation);
+							$("#kilometres").val(res.kilometres);
+							$("#driverId").val(res.driverId);
+						},
+						"json");
+						layui.use(['form','layer'], function(){
+							 $ = layui.jquery;
+						   var form = layui.form,
+						layer = layui.layer;
+						   //监听提交
+						   form.on('submit(add)',function(data){
+								$.post(globalData.server+"circuits/updateCricuits?id="+id,$("#circuitsEdit").serialize(),function(res){
+									if(res==true){
+										console.log(data); 
+										layer.alert("修改成功", {icon: 6},function () {
+											// 获得frame索引
+											var index = parent.layer.getFrameIndex(window.name);
+											//关闭当前frame
+											parent.layer.close(index);
+											parent.location.reload();
+										});
+									}else{
+										console.log(data);
+										//发异步，把数据提交给php
+										layer.alert("修改失败", {icon: 5},function () {
+											// 获得frame索引
+											var index = parent.layer.getFrameIndex(window.name);
+											//关闭当前frame
+											parent.layer.close(index);
+										});
+									}
+								},'json');
+								return false;
+						   }); 
+						 });
+			    	   }
+		</script>
+	</body>
+</html>
