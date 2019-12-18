@@ -17,126 +17,103 @@
   </head>
   
   <body>
-    <div class="x-body">
-        <form class="layui-form" id="userAdd">
-		  <div class="layui-form-item">
-		      <label for="userName" class="layui-form-label">
-		          <span class="x-red">*</span>用户名
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userName" name="userName" required="required"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="password1" class="layui-form-label">
-		          <span class="x-red">*</span>密码
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="password" name="password" required="" lay-verify="pass"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		   
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userSex" class="layui-form-label">
-		          <span class="x-red">*</span>性别
-		      </label>
-		      <div class="layui-input-inline">
-		          <select id="userSex" name="userSex" class="valid">
-					<option value="">--请选择--</option>
-		            <option value="男">男</option>
-		            <option value="女">女</option>
-		          </select>
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userAge" class="layui-form-label">
-		          <span class="x-red">*</span>年龄
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userAge" name="userAge" required="required"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userPhone" class="layui-form-label">
-		          <span class="x-red">*</span>手机号
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userPhone" name="userPhone" required="required"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userEmail" class="layui-form-label">
-		          <span class="x-red">*</span>邮箱
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userEmail" name="userEmail" required=""
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userImage" class="layui-form-label">
-		          头像
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userImage" name="userImage" 
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="roleId" class="layui-form-label">
-		          所属角色
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="roleId" name="roleId" 
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="L_repass" class="layui-form-label">
-		      </label>
-		      <button  class="layui-btn" lay-filter="add" lay-submit="" type="submit">
-		          增加
-		      </button>
-		  </div> 
-      </form>
-    </div>
-    <script>
-        layui.use(['form','layer'], function(){
-            $ = layui.jquery;
-          var form = layui.form,
-		  layer = layui.layer;
-          //监听提交
-          form.on('submit(add)',function(data){
-			$.post(globalData.server+"/users/save",$("#userAdd").serialize(),function(res){
-			    if(res==true){
-					console.log(data);
-					//发异步，把数据提交给php
-					layer.alert("增加成功", {icon: 6},function () {
-					    // 获得frame索引
-					    var index = parent.layer.getFrameIndex(window.name);
-					    //关闭当前frame
-					    parent.layer.close(index);
-						parent.location.reload();
-					});
-			    }else{
-			        console.log(data);
-			        //发异步，把数据提交给php
-			        layer.alert("增加失败", {icon: 5},function () {
-			            // 获得frame索引
-			            var index = parent.layer.getFrameIndex(window.name);
-			            //关闭当前frame
-			            parent.layer.close(index);
-			        });
-			    }
-			},'json');
-			return false;
-          }); 
-        });
-    </script>
+   <div class="x-body">
+             <form class="layui-form" id="userAdd">
+             		  <div class="layui-form-item">
+             		      <label for="userName" class="layui-form-label">
+             		          <span class="x-red">*</span>用户名
+             		      </label>
+             		      <div class="layui-input-inline">
+             		          <input type="text" id="userName" name="userName" required="required"
+             		          autocomplete="off" class="layui-input">
+             		      </div>
+             		  </div>
+             		 <!-- <div class="layui-form-item">
+             		      <label for="password1" class="layui-form-label">
+             		          <span class="x-red">*</span>密码
+             		      </label>
+             		      <div class="layui-input-inline">
+             		          <input type="password" id="password" name="password" required="" lay-verify="pass"
+             		          autocomplete="off" class="layui-input">
+             		      </div>
+             		   
+             		  </div> -->
+      		  <div class="layui-form-item">
+      		      <label for="userSex" class="layui-form-label">
+      		          <span class="x-red">*</span>性别
+      		      </label>
+      		      <div class="layui-input-inline">
+      		          <select id="userSex" name="userSex" class="valid">
+      		            <option value="男">男</option>
+      		            <option value="女">女</option>
+      		          </select>
+      		      </div>
+      		  </div>
+      		  <div class="layui-form-item">
+      		      <label for="userAge" class="layui-form-label">
+      		          <span class="x-red">*</span>年龄
+      		      </label>
+      		      <div class="layui-input-inline">
+      		          <input type="text" id="userAge" name="userAge" required="required"
+      		          autocomplete="off" class="layui-input" lay-verify="number">
+      		      </div>
+      		  </div>
+      		  <div class="layui-form-item">
+      		      <label for="userPhone" class="layui-form-label">
+      		          <span class="x-red">*</span>手机号
+      		      </label>
+      		      <div class="layui-input-inline">
+      		          <input type="text" id="userPhone" name="userPhone" required="required"
+      		          autocomplete="off" class="layui-input" lay-verify="phone">
+      		      </div>
+      		  </div>
+      		  <div class="layui-form-item">
+      		      <label for="userEmail" class="layui-form-label">
+      		          <span class="x-red">*</span>邮箱
+      		      </label>
+      		      <div class="layui-input-inline">
+      		          <input type="text" id="userEmail" name="userEmail" required=""
+      		          autocomplete="off" class="layui-input" lay-verify="email">
+      		      </div>
+      		  </div>
+      		
+      		  <div class="layui-form-item">
+      		      <label for="L_repass" class="layui-form-label">
+      		      </label>
+      		      <button  class="layui-btn" lay-filter="add" lay-submit="" type="submit">
+      		          增加
+      		      </button>
+      		  </div> 
+            </form>
+          </div>
+          <script>
+              layui.use(['form','layer'], function(){
+                  $ = layui.jquery;
+                var form = layui.form,
+      		  layer = layui.layer;
+                //监听提交
+                form.on('submit(add)',function(data){
+      			$.post(globalData.server+"users/save",$("#userAdd").serialize(),function(res){
+      			    if(res.success==true){
+      					console.log(data);
+      					//发异步，把数据提交给php
+      					layer.alert(res.message, {icon: 6},function () {
+      					    // 获得frame索引
+      					    var index = parent.layer.getFrameIndex(window.name);
+      					    //关闭当前frame
+      					    parent.layer.close(index);
+      						parent.location.reload();
+      					});
+      			    }else{
+      			        console.log(data);
+      			        //发异步，把数据提交给php
+      			        layer.alert(res.message, {icon: 5});
+      			    }
+      			},'json');
+      			return false;
+                }); 
+              });
+          </script>
   </body>
 
 </html>

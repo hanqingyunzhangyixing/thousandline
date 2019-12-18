@@ -7,15 +7,105 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="./css/font.css">
 	<link rel="stylesheet" href="./css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="resources/layui/css/layui.css"/>
+	<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
-<script type="text/javascript" src="js/loginFilter.js"></script>
+	<script type="text/javascript" src="js/global.js"></script>
+	<script type="text/javascript" src="js/loginFilter.js"></script>
+	<script type="text/javascript" src="resources/layui/layui.js"></script>
+	<script>
+	    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+	    layui.use(['element','layer'], function(){
+	        var $ = layui.jquery
+	            ,element = layui.element;
+				var layer=layui.layer;
+	 
+	        element.on('nav(demo)', function(elem){
+				 layer.msg(elem.text());
+				 
+	            //console.log(elem.getAttribute("meun_id")); //得到当前点击的DOM对象
+	            /* var id=$(this).attr("meun_id");
+	            if(typeof(id)!="undefined"){
+	                console.log('进入方法');
+	                element.tabAdd('demo1', {
+	                    title: '新选项'+ (Math.random()*1000|0) //用于演示
+	                    ,content: '<iframe src="index.html" style="width:100%;height:491px;" scrolling="auto" frameborder="0"></iframe>'
+	                    ,id: id//实际使用一般是规定好的id，这里以时间戳模拟下z
+	                })
+	                element.tabChange('demo1', id);
+	            } */
+	            });
+	        //获取所有的菜单
+	        $.ajax({
+	            type:"post",
+				url:globalData.server+"/modules/getModulesByUserName",
+				data:{userName:globalData.getCurUName(),tokenId:globalData.getToken()},
+	            dataType:"json",
+	            success:function(data){
+	                //先添加所有的主材单
+	                $.each(data,function(i,obj){
+	                    var content='<li>';
+	                    content+='<a href="javascript:;"><i class="iconfont">&#xe726;</i><cite>'+obj.meunTitle+'</cite><i class="iconfont nav_right">&#xe697;</i></a>';
+	                    //这里是添加所有的子菜单
+	                    content+=loadchild(obj);
+	                    content+='</li>';
+	                    $("#nav").append(content);
+	                });
+	                element.init();
+	            },
+	            error:function(jqXHR){
+	                alert("发生错误："+ jqXHR.status);
+	            }
+	        });
+	 
+	        //组装子菜单的方法
+	           function loadchild(obj){
+	            if(obj==null){
+	                return;
+	            }	 
+	            var content='';
+	            if(obj.childrenList!=null && obj.childrenList.length>0){
+	                content+='<ul class="sub-menu">';
+	            }else{
+	                content+='</ul>';
+	            }
+	            if(obj.childrenList!=null && obj.childrenList.length>0){
+	                $.each(obj.childrenList,function(i,note){
+	                    content+='<li>';
+	                    content+='<a _href="'+note.meunUrl+'"><i class="iconfont">&#xe6a7;</i><cite>'+note.meunTitle+'</cite></a>';
+	                    if(note.childrenList==null){
+	                        return ;
+	                    }
+	                    content+=loadchild(note);
+	                    content+='</li>';
+	                });
+	                content+='</ul>';
+	            }
+	            console.log(content);
+	            return content;
+	        }
+	    }); 
+	</script>
+	
+	
 </head>
+<script type="text/javascript">
+	$(function() {
+		$("#dengluming").html(globalData.getCurUName());
+		$("#btn").click(function() { //点击“安全退出”的文字
+				layer.confirm('你确定要离开吗?',{icon:3,title:"提示"}, function(r) {
+					if(r) {
+						globalData.setUserInfo(null, null, null); //清空session中存入的数据
+						window.location.href = "login.html"; //刷新到登录页面		
+					} 
+				});
+			})
+	})
+</script>
 <body>
     <!-- 顶部开始 -->
     <div class="container">
@@ -23,25 +113,15 @@
         <div class="left_open">
             <i title="展开左侧栏" class="iconfont">&#xe699;</i>
         </div>
-        <ul class="layui-nav left fast-add" lay-filter="">
-          <li class="layui-nav-item">
-            <a href="javascript:;">+新增</a>
-            <dl class="layui-nav-child"> <!-- 二级菜单 -->
-              <dd><a onclick="x_admin_show('资讯','http://www.baidu.com')"><i class="iconfont">&#xe6a2;</i>资讯</a></dd>
-              <dd><a onclick="x_admin_show('图片','http://www.baidu.com')"><i class="iconfont">&#xe6a8;</i>图片</a></dd>
-               <dd><a onclick="x_admin_show('用户','http://www.baidu.com')"><i class="iconfont">&#xe6b8;</i>用户</a></dd>
-            </dl>
-          </li>
-        </ul>
         <ul class="layui-nav right" lay-filter="">
           <li class="layui-nav-item">
-            <a href="javascript:;">admin</a>
+           <span id="dengluming">admin</span>
             <dl class="layui-nav-child"> <!-- 二级菜单 -->
 			  <dd><a onclick="x_admin_show('员工签到','http://www.baidu.com')">员工签到</a></dd>
 			  <dd><a onclick="x_admin_show('修改密码','basic/updatepassword.html')">修改密码</a></dd>
 			   <dd><a onclick="x_admin_show('修改头像','basic/updateimage.html')">修改头像</a></dd>
 			   <dd><a onclick="x_admin_show('锁定屏幕','http://www.baidu.com')">锁定屏幕</a></dd>
-              <dd><a href="./login.html">退出</a></dd>
+              <dd><a id="btn">退出</a></dd>
             </dl>
           </li>
           <li class="layui-nav-item to-index"><a href="/">公司文化</a></li>
@@ -54,239 +134,41 @@
     <div class="left-nav">
       <div id="side-nav">
         <ul id="nav">
-			
 			<!-- 系统模块 -->
-			<li>
-			    <a href="javascript:;">
-			        <i class="iconfont">&#xe726;</i>
-			        <cite>系统模块</cite>
-			        <i class="iconfont nav_right">&#xe697;</i>
-			    </a>
-			    <ul class="sub-menu">
-			        <li>
-			            <a _href="system/user-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>用户管理</cite>
-			            </a>
-			        </li >
-			        <li>
-			            <a _href="system/role-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>角色管理</cite>
-			            </a>
-			        </li >
-			        
-			        <li>
-			            <a _href="system/module-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>模块管理</cite>
-			            </a>
-			        </li >
-						<li>
-						    <a _href="system/employee-list.html">
-						        <i class="iconfont">&#xe6a7;</i>
-						        <cite>员工管理</cite>
+						 <li>
+						    <a href="javascript:;">
+						        <i class="iconfont">&#xe726;</i>
+						        <cite>系统模块</cite>
+						        <i class="iconfont nav_right">&#xe697;</i>
 						    </a>
-						</li >
-			    </ul>
-			</li>
-			
-			
-			<!-- 订单模块 -->
-			<li>
-			    <a href="javascript:;">
-			        <i class="iconfont">&#xe723;</i>
-			        <cite>订单模块</cite>
-			        <i class="iconfont nav_right">&#xe697;</i>
-			    </a>
-			    <ul class="sub-menu">
-			        <li>
-			            <a _href="order/order-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>订单列表</cite>
-			            </a>
-			        </li >
-						<li>
-						    <a _href="order/historyorder-list.html">
-						        <i class="iconfont">&#xe6a7;</i>
-						        <cite>历史订单</cite>
-						    </a>
-						</li >
-							<li>
-							    <a _href="order/repository-list.html">
-							        <i class="iconfont">&#xe6a7;</i>
-							        <cite>仓库管理</cite>
-							    </a>
-							</li >
-								
-								<li>
-								    <a _href="order/recycle-list.html">
-								        <i class="iconfont">&#xe6a7;</i>
-								        <cite>回收站</cite>
-								    </a>
-								</li >
-								
-			    </ul>
-			</li>
-			
-			<!-- 运输模块 -->
-			<li>
-			    <a href="javascript:;">
-			        <i class="iconfont">&#xe723;</i>
-			        <cite>运输模块</cite>
-			        <i class="iconfont nav_right">&#xe697;</i>
-			    </a>
-			    <ul class="sub-menu">
-			       <li>
-			           <a _href="transport/car-list.html">
-			               <i class="iconfont">&#xe6a7;</i>
-			               <cite>车辆管理</cite>
-			           </a>
-			       </li >
-						<li>
-						    <a _href="transport/driver-list.html">
-						        <i class="iconfont">&#xe6a7;</i>
-						        <cite>司机管理</cite>
-						    </a>
-						</li >
-							<li>
-							    <a _href="transport/cricuit-list.html">
-							        <i class="iconfont">&#xe6a7;</i>
-							        <cite>线路管理</cite>
-							    </a>
-							</li >
-								<li>
-								    <a _href="transport/dispatch-list.html">
-								        <i class="iconfont">&#xe6a7;</i>
-								        <cite>调度管理</cite>
-								    </a>
-								</li >
-								   <li>
-									    <a _href="transport/delivery-list.html">
+						    <ul class="sub-menu">
+						        <li>
+						            <a _href="system/user-list.html">
+						                <i class="iconfont">&#xe6a7;</i>
+						                <cite>用户管理</cite>
+						            </a>
+						        </li>
+						        <li>
+						            <a _href="system/role-list.html">
+						                <i class="iconfont">&#xe6a7;</i>
+						                <cite>角色管理</cite>
+						            </a>
+						        </li >
+						        
+						        <li>
+						            <a _href="system/module-list.html">
+						                <i class="iconfont">&#xe6a7;</i>
+						                <cite>模块管理</cite>
+						            </a>
+						        </li >
+									<li>
+									    <a _href="system/employee-list.html">
 									        <i class="iconfont">&#xe6a7;</i>
-									        <cite>送货跟踪</cite>
+									        <cite>员工管理</cite>
 									    </a>
 									</li >
-			    </ul>
-			</li>
-		
-			<!-- 财务模块 -->
-			<li>
-			    <a href="javascript:;">
-			        <i class="iconfont">&#xe726;</i>
-			        <cite>财务模块</cite>
-			        <i class="iconfont nav_right">&#xe697;</i>
-			    </a>
-			    <ul class="sub-menu">
-			        <li>
-			            <a _href="finance/empSalary-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>员工工资</cite>
-			            </a>
-			        </li >
-			        <li>
-			            <a _href="finance/outCar-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>出车费用</cite>
-			            </a>
-			        </li >
-			        
-			        <li>
-			            <a _href="finance/statement-list.html">
-			                <i class="iconfont">&#xe6a7;</i>
-			                <cite>报表中心</cite>
-			            </a>
-			        </li >
-						<li>
-						    <a _href="finance/cost-list.html">
-						        <i class="iconfont">&#xe6a7;</i>
-						        <cite>人力成本</cite>
-						    </a>
-						</li >
-							<li>
-							    <a _href="finance/return-list.html">
-							        <i class="iconfont">&#xe6a7;</i>
-							        <cite>利润分析</cite>
-							    </a>
-							</li >
-			    </ul>
-			</li>
-			
-			<!-- 基本模块 -->
-			<li>
-			    <a href="javascript:;">
-			        <i class="iconfont">&#xe723;</i>
-			        <cite>基本模块</cite>
-			        <i class="iconfont nav_right">&#xe697;</i>
-			    </a>
-			    <ul class="sub-menu">
-						</li >
-							<li>
-							    <a _href="basic/service-list.html">
-							        <i class="iconfont">&#xe6a7;</i>
-							        <cite>客服中心</cite>
-							    </a>
-							</li >		
-			    </ul>
-			</li>
-          
-            <li>
-                <a href="javascript:;">
-                    <i class="iconfont">&#xe6ce;</i>
-                    <cite>系统统计</cite>
-                    <i class="iconfont nav_right">&#xe697;</i>
-                </a>
-                <ul class="sub-menu">
-                    <li>
-                        <a _href="echarts1.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>拆线图</cite>
-                        </a>
-                    </li >
-                    <li>
-                        <a _href="echarts2.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>柱状图</cite>
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="echarts3.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>地图</cite>
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="echarts4.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>饼图</cite>
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="echarts5.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>雷达图</cite>
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="echarts6.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>k线图</cite>
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="echarts7.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>热力图</cite>
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="echarts8.html">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>仪表图</cite>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+						    </ul>
+						</li> 
         </ul>
       </div>
     </div>

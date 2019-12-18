@@ -18,154 +18,152 @@
   
   <body>
    <div class="x-body">
-       <form class="layui-form" id="userAdd">
-		   <!-- 隐藏id-->
-		<input type="hidden" id="id" name="id" />
-		<!-- 用户名 -->
-   	  <div class="layui-form-item">
-   	      <label for="userName" class="layui-form-label">
-   	          <span class="x-red">*</span>用户名
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="text" id="userName" name="userName" required="required"
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	  </div>
-	  <!-- 密码-->
-   	  <div class="layui-form-item">
-   	      <label for="password" class="layui-form-label">
-   	          <span class="x-red">*</span>密码
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="password" id="password" name="password" required="" lay-verify="pass"
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	    <!--  <div class="layui-form-mid layui-word-aux">
-   	         最低五个字符
-   	      </div> -->
-   	  </div>
-	  <!-- 性别-->
-   	  <div class="layui-form-item">
-   	      <label for="userSex" class="layui-form-label">
-   	          <span class="x-red">*</span>性别
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <select id="userSex" name="userSex" class="valid">
-   	            <option value="男">男</option>
-   	            <option value="女">女</option>
-   	          </select>
-   	      </div>
-   	  </div>
-	  <!-- 年龄-->
-   	  <div class="layui-form-item">
-   	      <label for="userAge" class="layui-form-label">
-   	          <span class="x-red">*</span>年龄
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="text" id="userAge" name="userAge" required="required"
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	  </div>
-	  <!-- 手机号-->
-   	  <div class="layui-form-item">
-   	      <label for="userPhone" class="layui-form-label">
-   	          <span class="x-red">*</span>手机号
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="text" id="userPhone" name="userPhone" required="required"
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	  </div>
-	  <!-- 邮箱-->
-   	  <div class="layui-form-item">
-   	      <label for="userEmail" class="layui-form-label">
-   	          <span class="x-red">*</span>邮箱
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="text" id="userEmail" name="userEmail" required=""
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	  </div>
-	  <!-- 头像-->
-   	  <div class="layui-form-item">
-   	      <label for="userImage" class="layui-form-label">
-   	          头像
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="text" id="userImage" name="userImage" 
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	  </div>
-	  <!-- 所属角色-->
-   	  <div class="layui-form-item">
-   	      <label for="roleId" class="layui-form-label">
-   	          所属角色
-   	      </label>
-   	      <div class="layui-input-inline">
-   	          <input type="text" id="roleId" name="roleId" 
-   	          autocomplete="off" class="layui-input">
-   	      </div>
-   	  </div>
-   	  <div class="layui-form-item">
-   	      <label for="L_repass" class="layui-form-label">
-   	      </label>
-   	      <button  class="layui-btn" lay-filter="add" lay-submit="" type="submit">
-   	          修改
-   	      </button>
-   	  </div> 
-     </form>
-   </div>
-   <script>
-	   function child(id) {
-	     $.post(globalData.server+"/users/getUserById?id=" + id,
-	                   $("#userAdd").serialize(),
-	                    function(res){
-							$("#userName").val(res.userName);
-							$("#password").val(res.password);
-							$("#userSex").val(res.userSex);
-							$("#userAge").val(res.userAge);
-							$("#userPhone").val(res.userPhone);
-							$("#userEmail").val(res.userEmail);
-							$("#userImage").val(res.userImage);
-							$("#roleId").val(res.roleId);
-	                    },
-	                    "json");
-						layui.use(['form','layer'], function(){
-						     $ = layui.jquery;
-						   var form = layui.form,
-						layer = layui.layer;
-						   //监听提交
-						   form.on('submit(add)',function(data){
-							   alert("我是修改中传的id"+id);
-						   		$.post(globalData.server+"/users/update?id="+id,$("#userAdd").serialize(),function(res){
-						   		    if(res==true){
-						   				console.log(data); 
-						   				layer.alert("修改成功", {icon: 6},function () {
-						   				    // 获得frame索引
-						   				    var index = parent.layer.getFrameIndex(window.name);
-						   				    //关闭当前frame
-						   				    parent.layer.close(index);
-						   					parent.location.reload();
-						   				});
-						   		    }else{
-						   		        console.log(data);
-						   		        //发异步，把数据提交给php
-						   		        layer.alert("修改失败", {icon: 5},function () {
-						   		            // 获得frame索引
-						   		            var index = parent.layer.getFrameIndex(window.name);
-						   		            //关闭当前frame
-						   		            parent.layer.close(index);
-						   		        });
-						   		    }
-						   		},'json');
-						   		return false;
-						   }); 
-						 });
-	   }
-   </script>
-   <script>
-       
-   </script>
+             <form class="layui-form" id="userAdd">
+      		   <!-- 隐藏id-->
+      		<input type="hidden" id="id" name="id" />
+      		<!-- 用户名 -->
+         	  <div class="layui-form-item">
+         	      <label for="userName" class="layui-form-label">
+         	          <span class="x-red">*</span>用户名
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="text" id="userName" name="userName" required="required"
+         	          autocomplete="off" class="layui-input" readonly="true" lay-verify="required">
+         	      </div>
+         	  </div>
+      	  <!-- 密码-->
+         	 <!-- <div class="layui-form-item">
+         	      <label for="password" class="layui-form-label">
+         	          <span class="x-red">*</span>密码
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="password" id="password" name="password" required="" lay-verify="pass"
+         	          autocomplete="off" class="layui-input">
+         	      </div> -->
+         	    <!--  <div class="layui-form-mid layui-word-aux">
+         	         最低五个字符
+         	      </div> -->
+         	  <!-- </div> -->
+      	  <!-- 性别-->
+         	  <div class="layui-form-item">
+         	      <label for="userSex" class="layui-form-label">
+         	          <span class="x-red">*</span>性别
+         	      </label>
+         	      <div class="layui-input-inline layui-form" lay-filter="selFilter">
+         	          <select id="userSex" name="userSex" class="valid">
+         	            <option value="男">男</option>
+         	            <option value="女">女</option>
+         	          </select>
+         	      </div>
+         	  </div>
+      	  <!-- 年龄-->
+         	  <div class="layui-form-item">
+         	      <label for="userAge" class="layui-form-label">
+         	          <span class="x-red">*</span>年龄
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="text" id="userAge" name="userAge" required="required"
+         	          autocomplete="off" class="layui-input" lay-verify="number">
+         	      </div>
+         	  </div>
+      	  <!-- 手机号-->
+         	  <div class="layui-form-item">
+         	      <label for="userPhone" class="layui-form-label">
+         	          <span class="x-red">*</span>手机号
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="text" id="userPhone" name="userPhone" required="required"
+         	          autocomplete="off" class="layui-input" lay-verify="phone">
+         	      </div>
+         	  </div>
+      	  <!-- 邮箱-->
+         	  <div class="layui-form-item">
+         	      <label for="userEmail" class="layui-form-label">
+         	          <span class="x-red">*</span>邮箱
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="text" id="userEmail" name="userEmail" required=""
+         	          autocomplete="off" class="layui-input" lay-verify="email">
+         	      </div>
+         	  </div>
+      	  <!-- 头像-->
+         	<!--  <div class="layui-form-item">
+         	      <label for="userImage" class="layui-form-label">
+         	          头像
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="text" id="userImage" name="userImage" 
+         	          autocomplete="off" class="layui-input">
+         	      </div>
+         	  </div> -->
+      	  <!-- 所属角色-->
+         	 <!-- <div class="layui-form-item">
+         	      <label for="roleId" class="layui-form-label">
+         	          所属角色
+         	      </label>
+         	      <div class="layui-input-inline">
+         	          <input type="text" id="roleId" name="roleId" 
+         	          autocomplete="off" class="layui-input">
+         	      </div>
+         	  </div> -->
+         	  <div class="layui-form-item">
+         	      <label for="L_repass" class="layui-form-label">
+         	      </label>
+         	      <button  class="layui-btn" lay-filter="add" lay-submit="" type="submit">
+         	          修改
+         	      </button>
+         	  </div> 
+           </form>
+         </div>
+         <script>
+      	   function child(id) {
+      	     $.post(globalData.server+"/users/getUserById?id=" + id,
+  		   $("#userAdd").serialize(),
+  			function(res){
+  				$("#userName").val(res.userName);
+  				/* $("#password").val(res.password); */
+  				$("#userAge").val(res.userAge);
+  				$("#userPhone").val(res.userPhone);
+  				$("#userEmail").val(res.userEmail);
+  				/* $("#userImage").val(res.userImage);
+  				$("#roleId").val(res.roleId); */
+  				$("#userSex").val(res.userSex);
+  				form.render("select","selFilter");
+  				
+  			},
+  			"json");
+  			layui.use(['form','layer'], function(){
+  				 $ = layui.jquery;
+  			   var form = layui.form,
+  			layer = layui.layer;
+  			   //监听提交
+  			   form.on('submit(add)',function(data){
+  					$.post(globalData.server+"/users/update?id="+id,$("#userAdd").serialize(),function(res){
+  						if(res==true){
+  							console.log(data); 
+  							layer.alert("修改成功", {icon: 6},function () {
+  								// 获得frame索引
+  								var index = parent.layer.getFrameIndex(window.name);
+  								//关闭当前frame
+  								parent.layer.close(index);
+  								parent.location.reload();
+  							});
+  						}else{
+  							console.log(data);
+  							//发异步，把数据提交给php
+  							layer.alert("修改失败", {icon: 5},function () {
+  								// 获得frame索引
+  								var index = parent.layer.getFrameIndex(window.name);
+  								//关闭当前frame
+  								parent.layer.close(index);
+  							});
+  						}
+  					},'json');
+  					return false;
+  			   }); 
+  			 });
+      	   }
+         </script>
   </body>
 
 </html>

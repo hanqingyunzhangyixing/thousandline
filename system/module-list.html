@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
   
   <head>
@@ -19,98 +18,187 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
     <link rel="stylesheet" href="../lib/layui-v2.5.4/css/layui.css" media="all">
     <link rel="stylesheet" href="../css/public.css" media="all">
-  </head>
-    
-     <style>
-         .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
-             height: 34px;
-             line-height: 34px;
-             padding: 0 8px;
-         }
-     </style>
-	 
-	 <!-- 操作列 -->
-	 <script type="text/html" id="auth-state">
-	     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
-	     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-	 </script>
-	 
-	<!-- <script src="../lib/layui-v2.5.4/layui.js" charset="utf-8"></script> -->
-	 <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
-	 <script>
-	     layui.use(['table', 'treetable'], function () {
-	         var $ = layui.jquery;
-	         var table = layui.table;
-	         var treetable = layui.treetable;
-	 
-	         // 渲染表格
-	         layer.load(2);
-	         treetable.render({
-	             treeColIndex: 1,
-	             treeSpid: -1,
-	             treeIdName: 'authorityId',
-	             treePidName: 'parentId',
-	             elem: '#munu-table',
-	             url: '../api/menus.json',
-	             page: false,
-	             cols: [[
-	                 {type: 'numbers'},
-	                 {field: 'authorityName', minWidth: 200, title: '权限名称'},
-	                 {field: 'authority', title: '权限标识'},
-	                 {field: 'menuUrl', title: '菜单url'},
-	                 {field: 'orderNumber', width: 80, align: 'center', title: '排序号'},
-	                 {
-	                     field: 'isMenu', width: 80, align: 'center', templet: function (d) {
-	                         if (d.isMenu == 1) {
-	                             return '<span class="layui-badge layui-bg-gray">按钮</span>';
-	                         }
-	                         if (d.parentId == -1) {
-	                             return '<span class="layui-badge layui-bg-blue">目录</span>';
-	                         } else {
-	                             return '<span class="layui-badge-rim">菜单</span>';
-	                         }
-	                     }, title: '类型'
-	                 },
-	                 {templet: '#auth-state', width: 120, align: 'center', title: '操作'}
-	             ]],
-	             done: function () {
-	                 layer.closeAll('loading');
-	             }
-	         });
-	 
-	         $('#btn-expand').click(function () {
-	             treetable.expandAll('#munu-table');
-	         });
-	 
-	         $('#btn-fold').click(function () {
-	             treetable.foldAll('#munu-table');
-	         });
-	 
-	         //监听工具条
-	         table.on('tool(munu-table)', function (obj) {
-	             var data = obj.data;
-	             var layEvent = obj.event;
-	             if (layEvent === 'del') {
-	                 layer.msg('删除' + data.id);
-	             } else if (layEvent === 'edit') {
-	                 layer.msg('修改' + data.id);
-	             }
-	         });
-	     });
-	 </script>
- </head>
- <body>
- <div class="layuimini-container">
-     <div class="layuimini-main">
-         <div>
-             <div class="layui-btn-group">
-                 <button class="layui-btn" id="btn-expand">全部展开</button>
-                 <button class="layui-btn" id="btn-fold">全部折叠</button>
-             </div>
-             <table id="munu-table" class="layui-table" lay-filter="munu-table"></table>
-         </div>
-     </div>
- </div>
- 
- </body>
+        <link rel="stylesheet" href="../LAYUI/layui/css/layui.css"/>
+ 		<link rel="stylesheet" href="../LAYUI/layui/css/modules/treetable/treetable.css"/>
+ 		<script type="text/javascript" src="../LAYUI/layui/layui.js"></script>
+ 		<script type="text/javascript" src="../LAYUI/layui/css/modules/treetable/treetable.js"></script>
+ 		<script type="text/javascript">
+			var tokenId=globalData.getToken();
+ 			/*使用模块加载的方式 加载文件*/
+ 			   /* layui.config({
+ 			        base: 'layui/css/modules/'
+ 			    }).extend({
+ 			        treetable: 'treetable'
+ 			    }) */layui.use(['layer', 'table', 'treetable'], function () {
+ 			        var $ = layui.jquery;
+ 			        var table = layui.table;
+ 			        var layer = layui.layer;
+ 			        var treetable = layui.treetable;
+ 			
+ 			        // 渲染表格
+ 			        var renderTable = function () {//树桩表格参考文档：https://gitee.com/whvse/treetable-lay
+ 			            layer.load(2);
+ 			            treetable.render({
+ 			                treeColIndex: 1,//树形图标显示在第几列
+ 			                treeSpid: 0,//最上级的父级id
+ 			                treeIdName: 'moduleId',//id字段的名称
+ 			                treePidName: 'parentId',//pid字段的名称
+ 			                treeDefaultClose: false,//是否默认折叠
+ 			                treeLinkage: true,//父级展开时是否自动展开所有子级
+ 			                elem: '#permissionTable',
+							url:globalData.server+"/modules/getModules",
+							/* showCheckbox:true, */
+							/* showLine:true, */
+ 			                page: false,
+ 			                cols: [[
+								/* {type:'checkbox'}, */
+								{type: 'numbers', title: '编号'}, 
+ 			                    {field: 'moduleName', width:200,align: 'center', title: '资源名称'},
+ 			                    {field: 'path',width:200,align: 'center', title: '资源路径'},
+ 			                    {field: 'ext2',width:200,align: 'center', title: '资源简介'},
+ 			                    {field: 'weight',width:160,align: 'center', title: '权重'},
+ 			                    {field: 'moduleType',width:160,align: 'center', title: '类型',
+ 			                    	templet: function(d){
+ 			                    		if(d.moduleType==0){
+ 			                    			return '菜单';
+ 			                    		}else if(d.moduleType==1){
+ 			                    			return '目录';
+ 			                    		}else{
+											return '按钮';
+										}
+ 			                        }	
+ 			                    },
+ 			                    {templet: complain,width:200,align: 'center',title: '操作'}
+ 			                ]],
+ 			                done: function () {
+ 			                    layer.closeAll('loading');
+ 			                }
+ 			            });
+ 			        };
+ 			
+ 			        renderTable();
+ 			        
+ 					//触发三个button按钮
+ 			        $('#btn-expand').click(function () {
+ 			            treetable.expandAll('#permissionTable');
+ 			        });
+ 			
+ 			        $('#btn-fold').click(function () {
+ 			            treetable.foldAll('#permissionTable');
+ 			        });
+ 			
+ 			        $('#btn-refresh').click(function () {
+ 			            renderTable();
+ 			        });
+ 					
+ 			        
+ 			        function complain(d){//操作中显示的内容
+ 			        	if(d.path!=null){
+ 			        		return [
+									'<a class="operation" lay-event="add" href="javascript:void(0)" onclick="addDepartment(\''+ d.moduleId + '\')" title="添加">',
+									'<i class="layui-icon layui-icon-add-circle"></i></a>',
+ 			                        '<a class="operation" lay-event="edit" href="javascript:void(0)" onclick="editDepartment(\''+ d.moduleId + '\')" title="编辑">',
+ 			            	     	'<i class="layui-icon layui-icon-edit"></i></a>',
+ 			            	     	'<a class="operation" lay-event="del" href="javascript:void(0)" onclick="delDepartment(\''+ d.moduleId + '\')" title="删除">',
+ 			            	     	'<i class="layui-icon layui-icon-delete" ></i></a>',
+ 			            	     	].join('');
+ 			        	}else{
+ 			        		return '';
+ 			        	}
+ 			        	
+ 			        }
+ 			        //监听工具条
+ 			        table.on('tool(permissionTable)', function (obj) {
+ 			            var data = obj.data;
+ 			            var layEvent = obj.event;
+						var id=data.id;
+ 						if(data.moduleName!=null){
+							if(layEvent === 'add'){
+								layer.open({
+											type:2,
+											area:['600px','500px'],
+											offset:'100px',
+											shadeClose:true,
+											maxmin:true,
+											content:'module-add1.html',
+											success: function (layero, ind) {
+													// 获取子页面的iframe
+													var iframe = window['layui-layer-iframe' + ind];
+													// 向子页面的全局函数child传参
+													iframe.child(id);
+											     }
+										 });
+							}
+ 							else if (layEvent === 'del') {
+								layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+								 $.post(globalData.server+"/modules/deleteModules",{id:id,tokenId:tokenId},function(res){
+								     if(res){
+								 		layer.alert(res.message, {icon: 6},function () {
+											// 获得frame索引
+											//var index = parent.layer.getFrameIndex(window.name);
+											//关闭当前frame
+											layer.close(index);
+											//treetable.reload();
+											renderTable();
+								 			
+								 		});
+								     }else{
+								         layer.alert(res.message, {icon: 5},function () {
+								             // 获得frame索引
+								             var index = parent.layer.getFrameIndex(window.name);
+								             //关闭当前frame
+								             layer.close(index);
+								         });
+								     }
+								 },'json');
+								});
+ 				            } else if (layEvent === 'edit') {
+								layer.open({
+											type:2,
+											area:['600px','500px'],
+											offset:'100px',
+											shadeClose:true,
+											maxmin:true,
+											content:'modules-edit.html',
+											success: function (layero, ind) {
+													// 获取子页面的iframe
+													var iframe = window['layui-layer-iframe' + ind];
+													// 向子页面的全局函数child传参
+													iframe.child(id);
+											     }
+										 });
+ 				            }
+ 						}
+ 			        });
+ 			    });
+				
+				
+	
+ 		</script>
+ 	</head>
+ 	<body>
+ 		 <div class="xm">
+ 		           <!-- <div class="xm-d1">
+ 		                <p class="xm-d1-p">权限管理</p>
+ 		             </div> -->
+ 		             
+ 		              <div class="xm-d2">
+ 		                <div class="xm-d2-hang1">
+ 		                  <div class="pzright" style="width:101%;display: flex;justify-content: flex-start;float:right;">
+ 		                    <p class="xm-d1-p2">
+ 		                	 	<button id="add" type="button" onclick="x_admin_show('添加根模块','module-add.html',600,400)" class="layui-btn layui-btn-radius btnys"><i class="layui-icon">&#xe608;</i>添加</button>
+ 						        <button class="layui-btn" id="btn-expand">全部展开</button>
+ 						        <button class="layui-btn" id="btn-fold">全部折叠</button>
+ 						        <button class="layui-btn" id="btn-refresh">刷新表格</button>
+ 		                   </p>
+ 		                  </div>  
+ 		                 <div class="clear"></div>  
+ 		                </div>
+ 		                <div class="xm-d2-hang2">
+ 						   <table id="permissionTable" class="layui-table" lay-filter="permissionTable"></table>
+ 		                </div>
+ 		            </div>
+ 		        </div>
+ 	</body>
  </html>
+ 

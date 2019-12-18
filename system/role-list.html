@@ -25,8 +25,8 @@
             method: 'post',
             url: globalData.server + 'roles/findAll',
 			queryParams: {
-								tokenId: tokenId
-							}
+				tokenId: tokenId
+						}
           });
         })
 		/* 查询 */
@@ -39,17 +39,18 @@
     	/* 按钮 */	
     	function anniu(value, row, index){
   		 return "<a onclick='updateRoles(" + index + ")'><i class='layui-icon'>&#xe642;</i></a>"
+		       +"<a onclick='setModules(" + index + ")'><i class='layui-icon'>&#xe716;</i></a>"
   		       +"<a onclick='deleteRoles(" + index + ")'> <i class='layui-icon'>&#xe640;</i></a>";
     		}
 			/* 点击修改按钮 */
 			function updateRoles(index) {
-					  //获取datagrid对应的json数据（对象集合）
+					    //获取datagrid对应的json数据（对象集合）
 			  			var data = $("#roleInfo").datagrid("getData"); 
 			  			var row = data.rows[index];
 			  			var id=row.id;
 			  			var ind=layer.open({
 			  				  type:2,
-			  				  area:['600px','500px'],
+			  				  //area:['600px','500px'],
 			  				  offset:'100px',
 			  				  shadeClose:true,
 			  				  maxmin:true,
@@ -60,6 +61,26 @@
 			  				 }
 			  			});
 			  		} 
+					
+					function setModules(index){
+						//获取datagrid对应的json数据（对象集合）
+						var data = $("#roleInfo").datagrid("getData"); 
+						var row = data.rows[index];
+						var id=row.id;
+						var ind=layer.open({
+							  type:2,
+							  title:"设置权限",
+							  area:['300px','500px'],
+							  offset:'100px',
+							  shadeClose:true,
+							  maxmin:true,
+						      content: 'module-set.html',
+							  success: function(layero, index){
+							  var iframe = window['layui-layer-iframe'+ind];
+							  iframe.child(id);
+							 }
+						});
+					}
       
   		    /* 点击删除按钮时 */
   			function deleteRoles(index){
@@ -70,18 +91,13 @@
   					var row = data.rows[index]; 
   					var id=row.id;
   				 $.post(globalData.server+"roles/deleteRole?id="+id,function(res){
-  				     if(res==true){
-  				 		layer.alert("删除成功", {icon: 6},function () {
+  				     if(res.success==true){
+  				 		layer.alert(res.message, {icon: 6},function () {
   				 		     layer.close(index);
   				 			window.location.reload();
   				 		});
   				     }else{
-  				         layer.alert("删除失败", {icon: 5},function () {
-  				             // 获得frame索引
-  				             var index = parent.layer.getFrameIndex(window.name);
-  				             //关闭当前frame
-  				             layer.close(index);
-  				         });
+  				         layer.alert(res.message, {icon: 5});
   				     }
   				 },'json');
   				});
@@ -104,7 +120,7 @@
 	          </form>
 	        </div>
             <xblock>
-	         <button class="layui-btn" onclick="x_admin_show('添加角色','role-add.html')"><i class="layui-icon"></i>添加</button>
+	         <button class="layui-btn" onclick="x_admin_show('添加角色','role-add.html',400,240)"><i class="layui-icon"></i>添加</button>
 			</xblock>
           <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
       		<table id="roleInfo" class="easyui-datagrid" title="角色信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">

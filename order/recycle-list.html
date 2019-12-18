@@ -19,75 +19,127 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
   <script type="text/javascript">
-    $(function() {
-      searchUsers();
-    })
+  	  var tokenId=globalData.getToken();
+      $(function() {
+       $("#orderInfo").datagrid({
+         method: 'post',
+         url: globalData.server + 'orders/queryHSOrdersByPage',//调用数据接口
+  	   queryParams: {
+  	   		tokenId: tokenId
+  	   	}
+       });
+      })
+  /* 点击删除按钮时 */
+  	//批量删除
+  				function delAll() {
+  					var nodes = $("#orderInfo").datagrid("getSelections");
+  					var s = "";
+  					//字符串拼接基本功，要求手熟
+  					for(var i = 0; i < nodes.length; i++) {
+  						if(s == "") {
+  							s += nodes[i].id;
+  						} else {
+  							s += ",";
+  							s += nodes[i].id;
+  						}
+  					}
+  					alert(nodes);
+  					if(nodes.length == 0) {
+  						layer.alert("请选中要删除的模块",{icon:7});
+  					}else{
+  						layer.confirm('您确认想要删除选中的订单信息吗？',{icon:3,title:"提示"}, function(r) {
+  							if(r) {
+  								$.post(globalData.server + "orders/delectByplHs", {
+  									ids: s,
+  									tokenId: globalData.getToken()
+  								}, function(res) {
+  									if(res > 0) {
+  										layer.alert("删除成功", {icon: 6});
+  										$("#orderInfo").datagrid("reload");
+  									}else{
+  										layer.alert("删除失败", {icon: 5},function () {
+  											 // 获得frame索引
+  											 var index = parent.layer.getFrameIndex(window.name);
+  											 //关闭当前frame
+  											 layer.close(index);
+  										});
+  									}
+  								}, "json")
+  							}
+  						})
+  					}
+  
+  	
+  				}
+  				//批量恢复
+  							function renew() {
+  								var array = $("#orderInfo").datagrid("getSelections");
+  								if(array.length == 0) {
+  									layer.alert("请选择要操作的订单!",{icon:7});
+  									return false;
+  								}
+  								var id = [];
+  								for(var i = 0; i < array.length; i++) {
+  									var a = array[i].id;
+  									id.push(a);
+  								}
+  								var ids = id.join(",");
+  								layer.confirm('您确认想要恢复选中的订单信息吗？',{icon:3,title:"提示"},function(r) {
+  									if(r) {
+  										$.post(globalData.server + "orders/updateOrdersExt1", {
+  											id: ids,
+  											tokenId: globalData.getToken()
+  										}, function(de) {
+  											if(de > 0) {
+  												layer.alert("恢复成功",{icon:1});
+  												$("#orderInfo").datagrid("load");
+  											} else {
+  												layer.alert("恢复失败！！",{icon:2});
+  											}
+  										}, "json");
+  									}
+  								})
+  				
+  							}
+    </script>
+    <body>
+  	  <div class="x-body">
+  	        <xblock>
+  	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+  	          <button class="layui-btn" onclick="renew()"><i class="layui-icon"></i>批量恢复</button>
+  	        </xblock>
+    <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
+      <table id="orderInfo" class="easyui-datagrid" title="订单信息" data-options="rownumbers:true,width:'100%',fitColumns:false,pageSize:5,singleSelect:false, showFooter: true,
+             checkOnSelect:true,selectOnCheck:true,remoteSort:false,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+        <thead>
+        <tr>
+          <th data-options="field:'id',width:100,align:'center'"  checkbox='true'></th>
+          <th data-options="field:'orderNo',title:'订单编号',width:130,align:'center'"></th>
+          <th data-options="field:'senderName',title:'发货方',width:120,align:'center'"></th>
+          <th data-options="field:'senderPhone',title:'发货方联系方式',width:160,align:'center'"></th>
+          <th data-options="field:'senderAddress',title:'发货地址',width:160,align:'center'"></th>
+          <th data-options="field:'receiver',title:'收货方',width:120,align:'center'"></th>
+          <th data-options="field:'receiverPhone',title:'收货方联系方式',width:160,align:'center'"></th>
+          <th data-options="field:'receiverAddress',title:'收货方地址',width:160,align:'center'"></th>
+          <th data-options="field:'status',title:'订单状态',width:120,align:'center'"></th>
+          <th data-options="field:'cargoNo',title:'货物编号',width:140,align:'center'"></th>
+          <th data-options="field:'cargoName',title:'货物名称',width:150,align:'center'"></th>
+          <th data-options="field:'tiaoma',title:'条码',width:150,align:'center'"></th>
+          <th data-options="field:'cargoType',title:'货物类型',width:130,align:'center'"></th>
+  		<th data-options="field:'cargoWeight',title:'货物重量',width:100,align:'center'"></th>
+  		<th data-options="field:'orderCreateTime',title:'订单创建时间',width:140,align:'center'"></th>
+  		<th data-options="field:'orderEndTime',title:'订单完成时间',width:140,align:'center'"></th>
+  		<th data-options="field:'cargoTiJi',title:'货物体积',width:100,align:'center'"></th>
+  		<th data-options="field:'packingUnit',title:'包装单位',width:100,align:'center'"></th>
+  		<th data-options="field:'cargoMember',title:'货物数量',width:100,align:'center'"></th>
+  		<th data-options="field:'cricuitsNo',title:'线路编号',width:150,align:'center'"></th>
+  		<th data-options="field:'remark',title:'备注',width:200,align:'center'"></th>
+        </tr>
+        </thead>
+      </table>
+    </div>
+    </div>
+    </body>
+  
+  </html>
 
-    function searchUsers() {
-      $("#userInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'users/findAll'//调用数据接口
-      });
-    }
-	/* 状态 */
-	function getstate(value, row, index){
-		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
-	}
-	/* 按钮 */
-	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
-	}
-  </script>
-  <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','../member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="fitColumns:false,rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'orderNo',title:'订单编号',width:130,align:'center'"></th>
-        <th data-options="field:'senderName',title:'发货方',width:120,align:'center'"></th>
-        <th data-options="field:'senderPhone',title:'发货方联系方式',width:160,align:'center'"></th>
-        <th data-options="field:'senderAddress',title:'发货地址',width:160,align:'center'"></th>
-        <th data-options="field:'receiver',title:'收货方',width:120,align:'center'"></th>
-        <th data-options="field:'receiverPhone',title:'收货方联系方式',width:160,align:'center'"></th>
-        <th data-options="field:'receiverAddress',title:'收货方地址',width:160,align:'center'"></th>
-        <th data-options="field:'status',title:'订单状态',width:120,align:'center',forrmatter: getstate"></th>
-        <th data-options="field:'cargoNo',title:'货物编号',width:140,align:'center'"></th>
-        <th data-options="field:'cargoName',title:'货物名称',width:150,align:'center'"></th>
-        <th data-options="field:'tiaoma',title:'条码',width:150,align:'center'"></th>
-        <th data-options="field:'cargoType',title:'货物类型',width:130,align:'center'"></th>
-		<th data-options="field:'cargoWeight',title:'货物重量',width:100,align:'center'"></th>
-		<th data-options="field:'orderCreateTime',title:'订单创建时间',width:140,align:'center'"></th>
-		<th data-options="field:'orderEndTime',title:'订单完成时间',width:140,align:'center'"></th>
-		<th data-options="field:'cargoTiJi',title:'货物体积',width:100,align:'center'"></th>
-		<th data-options="field:'packingUnit',title:'包装单位',width:100,align:'center'"></th>
-		<th data-options="field:'cargoMember',title:'货物数量',width:100,align:'center'"></th>
-		<th data-options="field:'cricuitsNo',title:'线路编号',width:150,align:'center'"></th>
-		<th data-options="field:'remark',title:'备注',width:200,align:'center'"></th>
-		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
-  </body>
-
-</html>

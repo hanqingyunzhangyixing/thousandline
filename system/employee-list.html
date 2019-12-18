@@ -45,14 +45,50 @@
   <script type="text/javascript">
 	var tokenId = globalData.getToken();
     $(function() {
+		showSetColumn();
       $("#employeeInfo").datagrid({
         method: 'post',
         url: globalData.server + 'employee/findAll',//调用数据接口
+		singleSelect:false,
+	    onDblClickRow :function(rowIndex,rowData){
+							 showSelectedSurveryDataOnMap(rowData);
+							},
 		queryParams: {
 			tokenId: tokenId
-					}
+					},
+		frozenColumns: [[
+			{field:'id',width:100,align:'center',checkbox:"true"},
+			{field: 'image',title:'头像',width: 80,align: 'center',
+					   formatter: function(value,row,index){
+							return "<img src="+value+" style=width:50px;height:50px;/>";
+						}
+					},
+			{field:'employeeNo',title:'员工工号',width:100,align:'center'},
+			{field:'employeeName',title:'员工姓名',width:100,align:'center'}
+			]]
       });
     })
+	/* 实现双击查看详情的功能 */
+	var showSelectedSurveryDataOnMap=function(rowData){
+		var data = $("#employeeInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+		var id=rowData.id;
+			if(id){
+				var ind=layer.open({
+							type:2,
+							area:['600px','500px'],
+							//offset:'100px',
+							shadeClose:true,
+							maxmin:true,
+							content:'employee-details.html',
+							success: function (layero, ind) {
+									// 获取子页面的iframe
+									var iframe = window['layui-layer-iframe' + ind];
+									// 向子页面的全局函数child传参
+									iframe.child(id);
+							     }
+						 });
+			}
+		}
 
 /* 多条件查询 */
     function searchEmployee() {
@@ -123,6 +159,45 @@
 		 },'json');
 		});
 	}
+	
+	/* 渲染部门 */
+	function bumen(value, row, index){
+		return row.departments.departName;
+	}
+	
+	
+	//设置要显示的列
+		function setLie(){
+			$("#showEmpInfo_window").window("open");
+		}
+		//全选
+		    function allChecked() {
+		    	$("#sb").find("input").prop("checked", $("#allChecked").prop("checked"));
+		    	var len = $("#sb").find("input[name=sbb]").length;
+		    	for(var i = 0; i < len; i++) {
+		    		$("#sb").find("input[name=sbb]").eq(i).change(); //绑定change事件
+		    	}
+		    }
+			//设置需要显示的列
+		    function showSetColumn() {
+		    	$("#sb").find("input[name=sbb]").change(function(res) {
+		    		if(this.checked == true) {
+		    			$("#employeeInfo").datagrid("showColumn", this.value);
+		    		} else {
+		    			$("#employeeInfo").datagrid("hideColumn", this.value);
+		    		}
+		    	});
+		    }
+			//单个选中或取消
+					   function onGetCheck(obj){
+					       var checkedCount= $(".ss:checked").length;//获取被选中的单个复选框的数量
+					       var totalCount=$(".ss").length;//获取复选框的总数量
+					       if(checkedCount==totalCount){
+					          $("#allChecked").prop("checked",true);
+					       }else{
+					         $("#allChecked").prop("checked",false);
+					       }
+					   }
   </script>
   <body>
 	  <div class="x-body">
@@ -172,20 +247,21 @@
 	        <xblock>
 	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
 	          <button class="layui-btn" onclick="x_admin_show('添加员工','employee-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
+	          <button class="layui-btn" onclick="setLie()"><i class="layui-icon">&#xe60a;</i>设置列</button>
+			</xblock>
   <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
     <table id="employeeInfo" class="easyui-datagrid" title="员工信息" data-options="fitColumns:false,rownumbers:true,width:'100%',pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
+        <!-- <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
         <th data-options="field:'employeeNo',title:'员工工号',width:100,align:'center'"></th>
-        <th data-options="field:'employeeName',title:'员工姓名',width:100,align:'center'"></th>
+        <th data-options="field:'employeeName',title:'员工姓名',width:100,align:'center'"></th> -->
         <th data-options="field:'employeeSex',title:'员工性别',width:100,align:'center'"></th>
         <th data-options="field:'employeeAge',title:'员工年龄',width:100,align:'center'"></th>
         <th data-options="field:'employeePhone',title:'员工手机号',width:100,align:'center'"></th>
         <th data-options="field:'hiredate',title:'入职时间',width:100,align:'center'"></th>
         <th data-options="field:'birthday',title:'生日',width:100,align:'center'"></th>
-        <th data-options="field:'image',title:'头像',width:100,align:'center'"></th>
+       <!-- <th data-options="field:'image',title:'头像',width:100,align:'center'"></th> -->
         <th data-options="field:'email',title:'电子邮件',width:100,align:'center'"></th>
         <th data-options="field:'identityCard',title:'身份证号',width:100,align:'center'"></th>
         <th data-options="field:'address',title:'住址',width:100,align:'center'"></th>
@@ -193,7 +269,7 @@
 		<th data-options="field:'salary',title:'工资',width:100,align:'center'"></th>
 		<th data-options="field:'jiXiaoSalary',title:'绩效工资',width:100,align:'center'"></th>
 		<th data-options="field:'reward',title:'奖金',width:100,align:'center'"></th>
-		<th data-options="field:'departNo',title:'所属部门',width:100,align:'center'"></th>
+		<th data-options="field:'departNo',title:'所属部门',width:100,align:'center',formatter:bumen"></th>
 		<th data-options="field:'remark',title:'备注',width:100,align:'center'"></th>
 		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
       </tr>
@@ -201,6 +277,42 @@
     </table>
   </div>
   </div>
+  
+  
+  
+  <!--设置要显示的列 -->
+<div id="showEmpInfo_window" class="easyui-window" title="要显示的列" data-options="modal:true,closed:true">
+	<fieldset>
+			<legend>要显示的列</legend>
+			<table id="sb" class="layui-table">
+				<tr>
+					<td colspan="7"><input type="checkbox" name="allChecked" id="allChecked" onchange="allChecked()" checked="checked"/>全选</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" name="sbb" class="ss" value="employeeNo" checked="checked" onclick="onGetCheck(1)"/>员工工号</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="employeeName" checked="checked" onclick="onGetCheck(1)"/>员工姓名</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="employeeSex" checked="checked"  onclick="onGetCheck(1)"/>员工性别</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="employeeAge" checked="checked"  onclick="onGetCheck(1)"/>员工年龄</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="employeePhone" checked="checked"  onclick="onGetCheck(1)"/>员工手机号</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="hiredate" checked="checked"  onclick="onGetCheck(1)"/>入职时间</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="birthday" checked="checked"  onclick="onGetCheck(1)"/>生日</td>	
+				<td><input type="checkbox" name="sbb"  class="ss" value="image" checked="checked"  onclick="onGetCheck(1)"/>头像</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" name="sbb"  class="ss" value="email" checked="checked"  onclick="onGetCheck(1)"/>电子邮件</td>
+					<td><input type="checkbox" name="sbb" class="ss" value="identityCard" checked="checked" onclick="onGetCheck(1)"/>身份证号</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="address"  checked="checked"  onclick="onGetCheck(1)"/>住址</td>
+					<td><input type="checkbox" name="sbb" class="ss" value="speciality" checked="checked" onclick="onGetCheck(1)"/>学历</td>
+					<td><input type="checkbox" name="sbb" class="ss" value="salary" checked="checked" onclick="onGetCheck(1)"/>工资</td>
+				<td><input type="checkbox" name="sbb"  class="ss" value="jiXiaoSalary" checked="checked"  onclick="onGetCheck(1)"/>绩效工资</td>
+					<td><input type="checkbox" name="sbb"  class="ss" value="reward" checked="checked"   onclick="onGetCheck(1)"/>奖金</td>
+				<td><input type="checkbox" name="sbb"  class="ss" value="departNo" checked="checked"   onclick="onGetCheck(1)"/>所属部门</td>
+				<td><input type="checkbox" name="sbb"  class="ss" value="reward" checked="checked"   onclick="onGetCheck(1)"/>备注</td>
+				</tr>
+			</table>
+		</fieldset>
+</div>
+
   </body>
 
 </html>

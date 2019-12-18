@@ -36,12 +36,22 @@
   <script type="text/javascript">
 	  var tokenId = globalData.getToken();
       $(function() {
+		  showSetColumn();
         $("#userInfo").datagrid({
           method: 'post',
           url: globalData.server + 'users/findAll',//调用数据接口
 		  queryParams: {
 		  		tokenId: tokenId
-		  				}
+		  				},
+		frozenColumns: [[
+				{field:'id',width:100,align:'center',checkbox:"true"},
+				{field: 'userImage',title:'头像',width: 80,align: 'center',
+						   formatter: function(value,row,index){
+								return "<img src="+value+" style=width:50px;height:50px;/>";
+							}
+						},
+				{field:'userName',title:'用户名',width:100,align:'center'}
+				]]
         });
        });
    
@@ -56,12 +66,13 @@
            tokenId: tokenId
           }); 
        }
-	
-	/* 按钮 */
+	/* 操作按钮 */
 	function anniu(value, row, index){
-	return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow("+index+")'><i class='layui-icon'>&#xe642;</i></a>"
-	+" <a title='删除' onclick='member_del("+index+")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i>";
-	}
+			  return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow("+index+")'><i class='layui-icon'>&#xe642;</i></a>"
+			         +" <a title='删除' onclick='member_del("+index+")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i></a>"
+					 +"<a  title='重置密码' href='javascript:void(0)' onclick='setPassword(" +index + ")'><i class='layui-icon'>&#xe63f;</i></a>"
+					 +"<a  title='解锁用户' href='javascript:void(0)' onclick='unlockUser(" +index + ")'><i class='layui-icon'>&#xe857;</i></a>";
+				}
  function adminShow(index){
  		//将当前行数据填入表单
  		var data = $("#userInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
@@ -105,6 +116,187 @@
  		 },'json');
  		});
  	}
+	
+	/* 重置密码 */
+	function setPassword(index){
+		layer.confirm('确定要为该用户重置密码吗?', {icon: 3, title:'提示'}, function(ind){
+			var data = $("#userInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id=row.id;
+		 $.post(globalData.server+"/users/setPassword?id="+id,function(res){
+			 if(res==1){
+				layer.alert("重置密码成功", {icon: 6},function () {
+					 layer.close(index);
+					 window.location.reload();
+				});
+			 }else{
+				 layer.alert("重置密码失败", {icon: 5},function () {
+					 // 获得frame索引
+					 var index = parent.layer.getFrameIndex(window.name);
+					 //关闭当前frame
+					 layer.close(index);
+				 });
+			 }
+		 },'json');
+		});
+	}
+	
+	
+	 //解锁用户
+	function unlockUser(index) {
+		var data = $("#userInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+		var row = data.rows[index];
+		if (row.isLock == 1) {
+			layer.confirm("您确认想要解锁用户吗？",{icon:3}, function(s) {
+				if (s) {
+					$.post(globalData.server + "users/updateNoUserLock", {
+						id: row.id,
+						tokenId: tokenId
+					}, function(r) {
+						if (r > 0) {
+							layer.alert( "解锁用户成功！！！",{icon:1});
+							$("#userInfo").datagrid("reload"); //通过调用reload方法，让datagrid刷新显示数据
+						}
+					}, "json");
+				}
+			});
+		} else {
+			layer.alert("已是解锁状态",{icon:4});
+		}
+	}  
+	/* 角色设置操作 */
+	function juese(value, row, index){
+		return "<a title='设置'  onclick='showRoles(" + index +")' > <i class='layui-icon'>&#xe614;</i></a>";
+	}
+	/* 是否锁定操作 */
+	function lock(value, row, index){
+		if(value==1){
+			return "是";
+		}else if(value==0){
+			return "否";
+		}
+	}
+	//设置要显示的列
+				function setLie(){
+					$("#showUserInfo_window").window("open");
+				}
+				//全选
+				    function allChecked() {
+				    	$("#sb").find("input").prop("checked", $("#allChecked").prop("checked"));
+				    	var len = $("#sb").find("input[name=sbb]").length;
+				    	for(var i = 0; i < len; i++) {
+				    		$("#sb").find("input[name=sbb]").eq(i).change(); //绑定change事件
+				    	}
+				    }
+					//设置需要显示的列
+				    function showSetColumn() {
+				    	$("#sb").find("input[name=sbb]").change(function(res) {
+				    		if(this.checked == true) {
+				    			$("#userInfo").datagrid("showColumn", this.value);
+				    		} else {
+				    			$("#userInfo").datagrid("hideColumn", this.value);
+				    		}
+				    	});
+				    }
+				   //单个选中或取消
+				      function onGetCheck(obj){
+				          var checkedCount= $(".ss:checked").length;//获取被选中的单个复选框的数量
+				          var totalCount=$(".ss").length;//获取复选框的总数量
+				          if(checkedCount==totalCount){
+				             $("#allChecked").prop("checked",true);
+				          }else{
+				            $("#allChecked").prop("checked",false);
+				          }
+				      }
+   </script>
+   
+   <script type="text/javascript">
+	   		//设置角色权限
+					function showRoles(index) {
+						$("#setRole_window").window("open");
+						$("#allRoles").datagrid({
+							url: globalData.server + "userrole/getRoles",
+							columns: [
+								[{
+									field: 'roleName',
+									title: '角色名称'
+								}]
+							]
+						});
+						var roleData = $("#userInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+						var rowData = roleData.rows[index]; //获取该行的数据
+						//alert(JSON.stringify(rowData)); 
+						$("#userid").val(rowData.userId);
+						$("#role").datagrid({
+							title:rowData.userName+'的角色',
+							url: globalData.server + 'userrole/selectRolesByUserId',
+							columns: [
+								[{
+									field: 'roleName',
+									title: '角色名称'
+								}]
+							],
+							queryParams: {
+							userId: roleData.rows[index].userId
+						}
+						});
+					}
+					function addRole() {
+					var rData = $("#allRoles").datagrid("getSelected");
+					if (rData == null) {
+						layer.alert("请选中要新增的角色", {icon:7});
+					}
+					var rData1 = $("#role").datagrid("getData");
+				/* 	alert(JSON.stringify(rData.roleName)); */
+					for (var i = 0; i < rData1.rows.length; i++) {
+						if (rData1.rows[i].roleName == rData.roleName) {
+							layer.alert("不能设置相同的角色", {icon:7});
+							return false;
+						}
+					}
+					var roleId = rData.roleId;
+					layer.confirm('您确认要新增角色吗？', {icon:3},function(s) {
+						$.post(globalData.server + 'userrole/addRoles', {
+							userId: $("#userid").val(),
+							roleId: roleId,
+						}, function(res) {
+							if (res > 0) {
+								layer.alert("新增角色成功！！！",{icon:6});
+								$("#role").datagrid("reload");
+								window.top.loadTree();
+							} else {
+								layer.alert("新增角色失败！！！",{icon:5});
+							}
+						}, 'json');
+					})
+				}
+				function removeRole() {
+					var rData2 = $("#role").datagrid("getSelected");
+					if (rData2 == null) {
+						layer.alert("请选中要移除的的角色", {icon:7});
+					}
+					var rData1 = $("#role").datagrid("getData");
+					var len = rData1.rows.length; 
+					var roleId2 = rData2.roleId;
+					/* alert(JSON.stringify(roleId2)); */
+					layer.confirm('您确认要移除角色吗？',{icon:3}, function(s) {
+						if (s) {
+							$.post(globalData.server + 'userrole/removeRoles', {
+								userId: $("#userid").val(),
+								roleId: roleId2,
+							}, function(res) {
+								if (res > 0) {
+									layer.alert("移除角色成功！！！", {icon:1});
+									$("#role").datagrid("reload");
+									window.top.loadTree();
+								} else {
+									layer.alert("移除角色失败！！！",{icon:2});
+								}
+							}, 'json');
+						}
+					})
+				}
+   
    </script>
 
   <body>
@@ -173,32 +365,92 @@
 	        <xblock>
 	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
 	          <button class="layui-btn" onclick="x_admin_show('添加用户','user-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
+	         <button class="layui-btn" onclick="setLie()"><i class="layui-icon">&#xe60a;</i>设置列</button>
+
+			</xblock>
   <div class="easyui-layout" id="productImgs_list">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,height:'600px',width:'100%',fitColumns:false,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,width:'100%',fitColumns:false,pageSize:5,singleSelect:false,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'userName',title:'用户名',width:100,align:'center'"></th>
+        <!-- <th data-options="field:'id',width:100,align:'center'"hidden="true"></th> -->
+		<!-- <th data-options="field:'userImage',title:'头像',width:100,align:'center'"></th>
+        <th data-options="field:'userName',title:'用户名',width:100,align:'center'"></th> -->
         <th data-options="field:'userSex',title:'性别',width:100,align:'center'"></th>
         <th data-options="field:'userAge',title:'年龄',width:100,align:'center'"></th>
         <th data-options="field:'userPhone',title:'手机号',width:100,align:'center'"></th>
         <th data-options="field:'userEmail',title:'邮箱',width:100,align:'center'"></th>
-        <th data-options="field:'userImage',title:'头像',width:100,align:'center'"></th>
         <th data-options="field:'isSignIn',title:'是否签到',width:100,align:'center'"></th>
         <th data-options="field:'lastTime',title:'最后登录时间',width:100,align:'center'"></th>
         <th data-options="field:'createTime',title:'创建时间',width:100,align:'center'"></th>
-		<th data-options="field:'isLock',title:'是否锁定',width:100,align:'center'"></th>
+		<th data-options="field:'isLock',title:'是否锁定',width:100,align:'center',formatter:lock"></th>
 		<th data-options="field:'lockTime',title:'锁定时间',width:100,align:'center'"></th>
 		<th data-options="field:'psdWrongTime',title:'密码错误次数',width:100,align:'center'"></th>
 		<th data-options="field:'unLockTime',title:'解锁时间',width:100,align:'center'"></th>
-        <th data-options="field:'roleId',title:'角色',width:100,align:'center'"></th>
+        <th data-options="field:'roleId',title:'角色',width:100,align:'center',formatter:juese"></th>
 		<th data-options="field:'caozuo',title:'操作',width:140,align:'center',formatter: anniu"></th>
       </tr>
       </thead> 
     </table>
   </div>
   </div>
+  <!--设置用户角色信息-->
+  				<div id="setRole_window" class="easyui-window" title="设置用户信息" data-options="modal:true,closed:true,iconCls:'icon-save'"
+  				 style="width:700px;height:600px;padding:10px;top:100px">
+  					<form id="setRoleForm">
+  						<input type="hidden" id="userid">
+  						<table cellpadding="5">
+  							<tr>
+  								<td>
+  									<table name="center" class="easyui-datagrid" id="allRoles" title="系统所有角色" style="width:300px;height:400px;padding:10;"
+  									 data-options="rownumbers:true,singleSelect:true,method:'post'">
+  		
+  									</table>
+  								</td>
+  								<td>
+  									<a class="layui-btn layui-btn-sm layui-btn-radius" type="button" onclick="addRole()"><i class="layui-icon">&#xe602;</i></a> <br /><br />
+  		
+  									<a class="layui-btn layui-btn-sm layui-btn-radius" type="button" onclick="removeRole()"><i class="layui-icon">&#xe603;</i></a>
+  								</td>
+  								<td>
+  									<table name="center" class="easyui-datagrid" id="role" style="width:300px;height:400px;padding:10;"
+  									 data-options="rownumbers:true,singleSelect:true,method:'post'">
+  		
+  									</table>
+  								</td>
+  							</tr>
+  						</table>
+  					</form>
+  				</div>
+  
+  
+  <!--设置要显示的列 -->
+	<div id="showUserInfo_window" class="easyui-window" title="要显示的列" data-options="modal:true,closed:true">
+		<fieldset>
+				<legend>要显示的列</legend>
+				<table id="sb" class="layui-table">
+					<tr>
+						<td colspan="7"><input type="checkbox" name="allChecked" id="allChecked" onchange="allChecked()" checked="checked"/>全选</td>
+					</tr>
+					<tr>
+						<td><input type="checkbox" name="sbb"  class="ss" value="userName" checked="checked" onclick="onGetCheck(1)"/>用户名</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="userSex" checked="checked"  onclick="onGetCheck(1)"/>性别</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="userAge" checked="checked"  onclick="onGetCheck(1)"/>年龄</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="userPhone" checked="checked"  onclick="onGetCheck(1)"/>手机号</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="userEmail" checked="checked"  onclick="onGetCheck(1)"/>邮箱</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="userImage" checked="checked"  onclick="onGetCheck(1)"/>头像</td>	
+					</tr>
+					<tr>
+						<td><input type="checkbox" name="sbb"  class="ss" value="isLock" checked="checked"  onclick="onGetCheck(1)"/>是否锁定</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="lockTime" checked="checked"  onclick="onGetCheck(1)"/>锁定时间</td>
+						<td><input type="checkbox" name="sbb" class="ss" value="psdWrongTime" checked="checked" onclick="onGetCheck(1)"/>密码错误次数</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="unLockTime"  checked="checked"  onclick="onGetCheck(1)"/>解锁时间</td>
+						<td><input type="checkbox" name="sbb" class="ss" value="isSignIn" checked="checked" onclick="onGetCheck(1)"/>是否签到</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="lastTime" checked="checked"  onclick="onGetCheck(1)"/>最后登录时间</td>
+						<td><input type="checkbox" name="sbb"  class="ss" value="createTime" checked="checked"   onclick="onGetCheck(1)"/>创建时间</td>
+					</tr>
+				</table>
+			</fieldset>
+	</div>
   </body>
 
 </html>
