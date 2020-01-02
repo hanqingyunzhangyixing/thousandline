@@ -111,17 +111,17 @@
 	         </form>
 	        </div>
 	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
 	          <button class="layui-btn" onclick="x_admin_show('添加线路','cricuits-add.html',600,400)"><i class="layui-icon"></i>添加</button>
 	        </xblock>
   <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="cricutisInfo" class="easyui-datagrid" title="线路信息" data-options="rownumbers:true,height:'60%',width:'100%',fitColumns:false,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+    <table id="cricutisInfo" class="easyui-datagrid" title="线路信息" data-options="rownumbers:true,height:'60%',width:'100%',fitColumns:false,pageSize:10,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
       <thead>
       <tr>
         <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
         <th data-options="field:'circuitsNo',title:'线路编号',width:130,align:'center'"></th>
         <th data-options="field:'circuitsName',title:'线路名称',width:120,align:'center'"></th>
-        <th data-options="field:'beginProvince',title:'出发地省份',width:160,align:'center'"></th>
+       <th data-options="field:'string2',title:'站点',width:220,align:'center'"></th>
+		<th data-options="field:'beginProvince',title:'出发地省份',width:160,align:'center'"></th>
         <th data-options="field:'beginCity',title:'出发地城市',width:160,align:'center'"></th>
         <th data-options="field:'beginRegion',title:'出发地县区',width:120,align:'center'"></th>
         <th data-options="field:'endProvince',title:'目的地省份',width:160,align:'center'"></th>

@@ -1,200 +1,227 @@
 <!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>千行物流管理系统</title>
-	<meta name="renderer" content="webkit|ie-comp|ie-stand">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="./css/font.css">
-	<link rel="stylesheet" href="./css/xadmin.css">
-    <link rel="stylesheet" href="resources/layui/css/layui.css"/>
-	<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script src="./lib/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="./js/xadmin.js"></script>
-	<script type="text/javascript" src="js/global.js"></script>
-	<script type="text/javascript" src="js/loginFilter.js"></script>
-	<script type="text/javascript" src="resources/layui/layui.js"></script>
-	<script>
-	    //注意：导航 依赖 element 模块，否则无法进行功能性操作
-	    layui.use(['element','layer'], function(){
-	        var $ = layui.jquery
-	            ,element = layui.element;
-				var layer=layui.layer;
-	 
-	        element.on('nav(demo)', function(elem){
-				 layer.msg(elem.text());
-				 
-	            //console.log(elem.getAttribute("meun_id")); //得到当前点击的DOM对象
-	            /* var id=$(this).attr("meun_id");
-	            if(typeof(id)!="undefined"){
-	                console.log('进入方法');
-	                element.tabAdd('demo1', {
-	                    title: '新选项'+ (Math.random()*1000|0) //用于演示
-	                    ,content: '<iframe src="index.html" style="width:100%;height:491px;" scrolling="auto" frameborder="0"></iframe>'
-	                    ,id: id//实际使用一般是规定好的id，这里以时间戳模拟下z
-	                })
-	                element.tabChange('demo1', id);
-	            } */
-	            });
-	        //获取所有的菜单
-	        $.ajax({
-	            type:"post",
-				url:globalData.server+"/modules/getModulesByUserName",
-				data:{userName:globalData.getCurUName(),tokenId:globalData.getToken()},
-	            dataType:"json",
-	            success:function(data){
-	                //先添加所有的主材单
-	                $.each(data,function(i,obj){
-	                    var content='<li>';
-	                    content+='<a href="javascript:;"><i class="iconfont">&#xe726;</i><cite>'+obj.meunTitle+'</cite><i class="iconfont nav_right">&#xe697;</i></a>';
-	                    //这里是添加所有的子菜单
-	                    content+=loadchild(obj);
-	                    content+='</li>';
-	                    $("#nav").append(content);
-	                });
-	                element.init();
-	            },
-	            error:function(jqXHR){
-	                alert("发生错误："+ jqXHR.status);
-	            }
-	        });
-	 
-	        //组装子菜单的方法
-	           function loadchild(obj){
-	            if(obj==null){
-	                return;
-	            }	 
-	            var content='';
-	            if(obj.childrenList!=null && obj.childrenList.length>0){
-	                content+='<ul class="sub-menu">';
-	            }else{
-	                content+='</ul>';
-	            }
-	            if(obj.childrenList!=null && obj.childrenList.length>0){
-	                $.each(obj.childrenList,function(i,note){
-	                    content+='<li>';
-	                    content+='<a _href="'+note.meunUrl+'"><i class="iconfont">&#xe6a7;</i><cite>'+note.meunTitle+'</cite></a>';
-	                    if(note.childrenList==null){
-	                        return ;
-	                    }
-	                    content+=loadchild(note);
-	                    content+='</li>';
-	                });
-	                content+='</ul>';
-	            }
-	            console.log(content);
-	            return content;
-	        }
-	    }); 
-	</script>
-	
-	
-</head>
-<script type="text/javascript">
-	$(function() {
-		$("#dengluming").html(globalData.getCurUName());
-		$("#btn").click(function() { //点击“安全退出”的文字
-				layer.confirm('你确定要离开吗?',{icon:3,title:"提示"}, function(r) {
-					if(r) {
+	<head>
+		<meta charset="UTF-8">
+		<title>千行物流管理系统</title>
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="./css/font.css">
+		<link rel="stylesheet" href="./css/xadmin.css">
+		<link rel="stylesheet" href="resources/layui/css/layui.css" />
+		<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script src="./lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="./js/xadmin.js"></script>
+		<script type="text/javascript" src="js/global.js"></script>
+		<script type="text/javascript" src="js/loginFilter.js"></script>
+		<script type="text/javascript" src="resources/layui/layui.js"></script>
+	</head>
+	<script type="text/javascript">
+		$(function() {
+			$("#img").attr('src', globalData.getUserImage());
+			$("#dengluming").html(globalData.getCurUName());
+			$("#btn").click(function() { //点击“安全退出”的文字
+				layer.confirm('你确定要离开吗?', {
+					icon: 3,
+					title: "提示"
+				}, function(r) {
+					if (r) {
 						globalData.setUserInfo(null, null, null); //清空session中存入的数据
 						window.location.href = "login.html"; //刷新到登录页面		
-					} 
+					}
 				});
 			})
-	})
-</script>
-<body>
-    <!-- 顶部开始 -->
-    <div class="container">
-        <div class="logo"><a href="./index.html">千行物流后台管理系统</a></div>
-        <div class="left_open">
-            <i title="展开左侧栏" class="iconfont">&#xe699;</i>
-        </div>
-        <ul class="layui-nav right" lay-filter="">
-          <li class="layui-nav-item">
-           <span id="dengluming">admin</span>
-            <dl class="layui-nav-child"> <!-- 二级菜单 -->
-			  <dd><a onclick="x_admin_show('员工签到','http://www.baidu.com')">员工签到</a></dd>
-			  <dd><a onclick="x_admin_show('修改密码','basic/updatepassword.html')">修改密码</a></dd>
-			   <dd><a onclick="x_admin_show('修改头像','basic/updateimage.html')">修改头像</a></dd>
-			   <dd><a onclick="x_admin_show('锁定屏幕','http://www.baidu.com')">锁定屏幕</a></dd>
-              <dd><a id="btn">退出</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item to-index"><a href="/">公司文化</a></li>
-        </ul>
-        
-    </div>
-    <!-- 顶部结束 -->
-    <!-- 中部开始 -->
-     <!-- 左侧菜单开始 -->
-    <div class="left-nav">
-      <div id="side-nav">
-        <ul id="nav">
-			<!-- 系统模块 -->
-						 <li>
-						    <a href="javascript:;">
-						        <i class="iconfont">&#xe726;</i>
-						        <cite>系统模块</cite>
-						        <i class="iconfont nav_right">&#xe697;</i>
-						    </a>
-						    <ul class="sub-menu">
-						        <li>
-						            <a _href="system/user-list.html">
-						                <i class="iconfont">&#xe6a7;</i>
-						                <cite>用户管理</cite>
-						            </a>
-						        </li>
-						        <li>
-						            <a _href="system/role-list.html">
-						                <i class="iconfont">&#xe6a7;</i>
-						                <cite>角色管理</cite>
-						            </a>
-						        </li >
-						        
-						        <li>
-						            <a _href="system/module-list.html">
-						                <i class="iconfont">&#xe6a7;</i>
-						                <cite>模块管理</cite>
-						            </a>
-						        </li >
-									<li>
-									    <a _href="system/employee-list.html">
-									        <i class="iconfont">&#xe6a7;</i>
-									        <cite>员工管理</cite>
-									    </a>
-									</li >
-						    </ul>
-						</li> 
-        </ul>
-      </div>
-    </div>
-    <!-- <div class="x-slide_left"></div> -->
-    <!-- 左侧菜单结束 -->
-    <!-- 右侧主体开始 -->
-    <div class="page-content">
-        <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
-          <ul class="layui-tab-title">
-            <li>我的桌面</li>
-          </ul>
-          <div class="layui-tab-content">
-            <div class="layui-tab-item layui-show">
-                <iframe src='./welcome.html' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
-            </div>
-          </div>
-        </div>
-    </div>
-    <div class="page-content-bg"></div>
-    <!-- 右侧主体结束 -->
-    <!-- 中部结束 -->
-    <!-- 底部开始 -->
-   <!-- <div class="footer">
+		})
+	</script>
+
+	<script type="text/javascript">
+		//页面加载完成查询该用户的签到状态
+		$(function() {
+			$.post(globalData.server + "usersign/getUserCheck", {
+				tokenId: globalData.getToken()
+			}, function(res) {
+				if (res.sum <=0) {
+					$("#sign").html("员工签到");
+				}
+				if (res.sList[0].signStatus == 1) {
+					$("#sign").html("员工签退");
+				}
+			}, "json");
+		});
+
+		function EmpSign() {
+			var sign = $("#sign").text();
+			if (sign == "员工签到") {
+				$.post(globalData.server + "usersign/addChecks", {
+					tokenId: globalData.getToken()
+				}, function(res) {
+					if (res > 0) {
+						layer.alert("签到成功", {
+							icon: 6
+						});
+						$("#sign").html("员工签退");
+					} else {
+						layer.alert("签到失败", {
+							icon: 2
+						});
+					};
+				}, "json");
+			}
+			if (sign == "员工签退") {
+				$.post(globalData.server + "usersign/checkOut", {
+					tokenId: globalData.getToken()
+				}, function(res) {
+					if (res > 0) {
+						layer.alert("签退成功", {
+							icon: 1
+						});
+						$("#sign").html("员工签到");
+					} else {
+						layer.alert("员工签到还未到10分钟，不可以签退哟！！", {
+							icon: 7
+						});
+					}
+				}, "json");
+			}
+		}
+
+		/* 屏幕锁定 */
+		function lockScreen() {
+			window.location.href = "lockScreen.html";
+		}
+
+		/**
+		 * 个人信息--修改头像
+		 */
+		function grenxinxi() {
+			var id = sessionStorage.getItem("id");
+			var ind = layer.open({
+				type: 2,
+				area: ['500px', '500px'],
+				offset: '100px',
+				shadeClose: true,
+				maxmin: true,
+				content: 'system/user-Img.html',
+				success: function(layero, ind) {
+					// 获取子页面的iframe
+					var iframe = window['layui-layer-iframe' + ind];
+					// 向子页面的全局函数child传参
+					iframe.child(id);
+				}
+			});
+		}
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			shuaxin();
+		});
+
+		function shuaxin() {
+			$.post(globalData.server + "users/getByLoginName", {
+					tokenId: globalData.getToken()
+				},
+				function(res) {
+					if (res.success == true) {
+						$("#img").attr('src', res.user.userImage);
+						globalData.setUserImage(res.user.userImage)
+					}
+				}, "json");
+
+		}
+	</script>
+	<script type="text/javascript">
+		$(function() {
+				getMessage();
+		})
+		
+		function getMessage(){
+			$.post(globalData.server + "/roles/getRolesByUserId", {
+				tokenId: globalData.getToken()
+			}, function(res) {
+				if (res[0].roleName == '调度员') {
+					$.post(globalData.server + "/orders/getCountByStatus", {
+						tokenId: globalData.getToken()
+					}, function(res) {
+						if (res > 0) {
+							var time = window.setInterval(function() {
+								layer.msg("您有" + res + "条订单未审核", {
+									icon: 7
+								});
+							}, 3 * 1000);
+						}
+					}, "json");
+				}
+			}, "json");
+		}
+	</script>
+
+	<body>
+		<!-- 顶部开始 -->
+		<div class="container">
+			<!-- logo-->
+			<div class="logo"><a href="./index.html">千行物流后台管理系统</a></div>
+			<!-- 操作左侧栏 -->
+			<div class="left_open">
+				<i title="展开左侧栏" class="iconfont">&#xe699;</i>
+			</div>
+			<!-- 中间文字的滚动 -->
+			<!-- <marquee behavior="scroll" direction="right"> 
+			<div align="center" style="color: white;font-size:30px ;" id="gongGao"></div>
+		 </marquee> -->
+			<!-- 右侧-->
+			<ul class="layui-nav right" lay-filter="">
+				<li class="layui-nav-item">
+					<img id="img" width="50" src="" style="cursor:pointer;" height="50" /> &emsp;
+					<span id="dengluming"></span>
+					<dl class="layui-nav-child">
+						<!-- 二级菜单 -->
+						<!-- <dd><a onclick="grenxinxi()">个人信息</a></dd> -->
+						<dd><a onclick="grenxinxi()">修改头像</a></dd>
+						<dd><a id="check" onclick="EmpSign()"><span id="sign">员工签到</span></a></dd>
+						<dd><a onclick="x_admin_show('修改密码','basic/updatepassword.html',300,400)">修改密码</a></dd>
+						<dd><a id="btn">退出</a></dd>
+					</dl>
+				</li>
+				<!-- <li class="layui-nav-item to-index"><a href="/">关于我们</a></li> -->
+			</ul>
+		</div>
+		<!-- 顶部结束 -->
+		<!-- 中部开始 -->
+		<!-- 左侧菜单开始 -->
+		<div class="left-nav">
+			<div id="side-nav">
+				<ul id="nav">
+
+				</ul>
+			</div>
+		</div>
+		<div class="x-slide_left"></div>
+		<!-- 左侧菜单结束 -->
+		<!-- 右侧主体开始 -->
+		<div class="page-content">
+			<div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+				<ul class="layui-tab-title">
+					<li>我的位置</li>
+				</ul>
+				<div class="layui-tab-content">
+					<div class="layui-tab-item layui-show">
+						<!-- <iframe src='./welcome.html' frameborder="0" scrolling="yes" class="x-iframe"></iframe> -->
+						<iframe src='map.html' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="page-content-bg"></div> -->
+		<!-- 右侧主体结束 -->
+		<!-- 中部结束 -->
+		<!-- 底部开始 -->
+		<!-- <div class="footer">
         <div class="copyright">Copyright ©2017 All Rights Reserved</div>  
     </div> -->
-    <!-- 底部结束 -->
-    
-</body>
+		<!-- 底部结束 -->
+		<!--修改头像-->
+
+	</body>
 </html>

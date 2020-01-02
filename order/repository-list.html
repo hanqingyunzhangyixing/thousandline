@@ -19,75 +19,203 @@
     <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
   </head>
   <script type="text/javascript">
-    $(function() {
-      searchUsers();
-    })
-
-    function searchUsers() {
-      $("#userInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'users/findAll'//调用数据接口
-      });
-    }
-	/* 状态 */
-	function getstate(value, row, index){
-		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
-	}
-	/* 按钮 */
-	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
-	}
-  </script>
-  <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="fitColumns:false,rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'orderNo',title:'订单编号',width:130,align:'center'"></th>
-        <th data-options="field:'senderName',title:'发货方',width:120,align:'center'"></th>
-        <th data-options="field:'senderPhone',title:'发货方联系方式',width:160,align:'center'"></th>
-        <th data-options="field:'senderAddress',title:'发货地址',width:160,align:'center'"></th>
-        <th data-options="field:'receiver',title:'收货方',width:120,align:'center'"></th>
-        <th data-options="field:'receiverPhone',title:'收货方联系方式',width:160,align:'center'"></th>
-        <th data-options="field:'receiverAddress',title:'收货方地址',width:160,align:'center'"></th>
-        <th data-options="field:'status',title:'订单状态',width:120,align:'center',forrmatter: getstate"></th>
-        <th data-options="field:'cargoNo',title:'货物编号',width:140,align:'center'"></th>
-        <th data-options="field:'cargoName',title:'货物名称',width:150,align:'center'"></th>
-        <th data-options="field:'tiaoma',title:'条码',width:150,align:'center'"></th>
-        <th data-options="field:'cargoType',title:'货物类型',width:130,align:'center'"></th>
-		<th data-options="field:'cargoWeight',title:'货物重量',width:100,align:'center'"></th>
-		<th data-options="field:'orderCreateTime',title:'订单创建时间',width:140,align:'center'"></th>
-		<th data-options="field:'orderEndTime',title:'订单完成时间',width:140,align:'center'"></th>
-		<th data-options="field:'cargoTiJi',title:'货物体积',width:100,align:'center'"></th>
-		<th data-options="field:'packingUnit',title:'包装单位',width:100,align:'center'"></th>
-		<th data-options="field:'cargoMember',title:'货物数量',width:100,align:'center'"></th>
-		<th data-options="field:'cricuitsNo',title:'线路编号',width:150,align:'center'"></th>
-		<th data-options="field:'remark',title:'备注',width:200,align:'center'"></th>
-		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
-  </body>
-
-</html>
+  	  layui.use('laydate', function(){
+  	    var laydate = layui.laydate;
+  	    
+  	    //执行一个laydate实例
+  	    laydate.render({
+  	      elem: '#beginEntryTime',//指定元素
+  	  	format: 'yyyy-MM-dd HH:mm:ss'
+  	    });
+  		//执行一个laydate实例
+  		laydate.render({
+  		  elem: '#endEntryTime',//指定元素
+  		format: 'yyyy-MM-dd HH:mm:ss'
+  		});
+  	  });
+  	 
+  	  
+  	  
+      $(function() {
+        searchRepository();
+      })
+  
+      function searchRepository() {
+        $("#repositoryInfo").datagrid({
+          method: 'post',
+  		queryParams: {
+  		    	repositoryName:$("#repositoryName").val(),
+  				companyNo:$("#companyNo").val(),
+  				cargoNumber:$("#cargoNumber").val(),
+  				cargoType:$("#cargoType").val(),
+  				cargoGuiGe:$("#cargoGuiGe").val(),
+  				beginEntryTime:$("#beginEntryTime").val(),
+  				endEntryTime:$("#endEntryTime").val()
+  				
+  			},
+          url: globalData.server + 'repository/findAll'//调用数据接口
+  		
+        });
+      }
+  	/* 状态 */
+  	function getstate(value, row, index){
+  		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
+  	}
+  	/* 按钮 */
+  	function anniu(value, row, index){
+  		return  "<a title='编辑'  onclick='updateRepository(" + index + ")'> <i class='layui-icon'>&#xe642;</i> </a>"
+                /* +" <a title='删除' onclick='deleteRepository(" + index + ")'> <i class='layui-icon'>&#xe640;</i> </a>" */;
+  	}
+  	
+  	//点击修改按钮
+  	function updateRepository(index) {
+  	  			var data = $("#repositoryInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+  	  			var row = data.rows[index];
+  	  			var id=row.id;
+  	  			var ind=layer.open({
+  	  				  type:2,
+  	  				  area:['600px','500px'],
+  	  				  //offset:'100px',
+  	  				  shadeClose:true,
+  	  				  maxmin:true,
+  	  			      content: 'repository-edit.html',
+  	  				  success: function(layero, index){
+  	  				  var iframe = window['layui-layer-iframe'+ind];
+  	  				  iframe.child(id);
+  	  				 }
+  	  			});
+  	  		}
+  	
+  	
+  	/* 点击删除按钮时 */
+  		function deleteRepository(index){
+  			layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+  				var data = $("#repositoryInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+  				var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+  				var id=row.id;
+  			 $.post(globalData.server+"repository/deleteById?id="+id,function(res){
+  			     if(res==true){
+  			 		layer.alert("删除成功", {icon: 6},function () {
+  			 		     layer.close(index);
+  			 			window.location.reload();
+  			 		});
+  			     }else{
+  			         layer.alert("删除失败", {icon: 5},function () {
+  			             // 获得frame索引
+  			             var index = parent.layer.getFrameIndex(window.name);
+  			             //关闭当前frame
+  			             layer.close(index);
+  			         });
+  			     }
+  			 },'json');
+  			});
+  		}
+  	
+  	
+  	/* 批量删除 */
+  			function delAll() {
+  				var array = $("#repositoryInfo").datagrid("getChecked");
+  				alert(array);
+  				if(array.length == 0) {
+  					layer.alert("请选择要删除的产品!", {icon: 3, title:'提示'});
+  					return false;
+  				}
+  				var id = "";
+  				for(var i = 0; i < array.length; i++) {
+  					if(id==""){
+  						id+=array[i].id;
+  					}else{
+  						id+=",";
+  						id+=array[i].id;
+  					}
+  				}
+  				alert(id);
+  				layer.confirm('您确定要删除选中的产品吗？',{icon: 4, title:'提示'}, function(r) {
+  					if(r) {
+  						$.post(globalData.server + "/repository/delectByIds", {
+  							ids: id,
+  							tokenId: globalData.getToken()
+  						}, function(de) {
+  							if(de > 0) {
+  								layer.alert("删除成功！！",{icon: 1});
+  								$("#repositoryInfo").datagrid("load");
+  							} else {
+  								layer.alert("删除失败",{icon: 2});
+  							} 
+  						}, "json");
+  					}
+  				});
+  			}
+    </script>
+    <body class="layui-anim layui-anim-up">
+    	   
+  	     <div class="layui-row">
+  	          <form class="layui-form layui-col-md12 x-so">
+  				  <div class="layui-inline">
+  				      <label class="layui-form-label">仓库名字</label>
+  				      <div class="layui-inline">
+  				          <input type="text" placeholder="请输入仓库名字" name="repositoryName" id="repositoryName" class="layui-input">
+  				      </div>
+  				  </div>
+  				  <div class="layui-inline">
+  				      <label class="layui-form-label">客户公司</label>
+  				      <div class="layui-inline">
+  				          <input type="text" placeholder="请输入客户公司编号" name="companyNo" id="companyNo" class="layui-input">
+  				      </div>
+  				  </div>
+  				  <div class="layui-inline">
+  				      <label class="layui-form-label">货物编码</label>
+  				      <div class="layui-inline">
+  				          <input type="text" placeholder="请输入货物编码" name="cargoNumber" id="cargoNumber" class="layui-input">
+  				      </div>
+  				  </div>
+  				  <div class="layui-inline">
+  				      <label class="layui-form-label">货物类型</label>
+  				      <div class="layui-inline">
+  				          <input type="text" placeholder="请输入货物类型" name="cargoType" id="cargoType" class="layui-input">
+  				      </div>
+  				  </div>
+  				 <div class="layui-inline">
+  				     <label class="layui-form-label">货物规格</label>
+  				     <div class="layui-inline">
+  				         <input type="text" placeholder="请输入货物规格" name="cargoGuiGe" id="cargoGuiGe" class="layui-input">
+  				     </div>
+  				 </div>
+  				 <div class="layui-inline">
+  				   <label class="layui-form-label">入库时间</label>
+  				   <input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="beginEntryTime">
+  				   ~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endEntryTime">
+  				 </div>
+  	            <button class="layui-btn" type="button" lay-submit="" lay-filter="sreach" onclick="searchRepository()"><i class="layui-icon">&#xe615;</i></button>
+  	          </form>
+  	        </div>
+  	        <xblock>
+  	         <!-- <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button> -->
+  	          <button class="layui-btn" onclick="x_admin_show('添加仓库物品信息','./repository-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+  	        </xblock>
+    <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
+      <table id="repositoryInfo" class="easyui-datagrid" title="用户信息" data-options="fitColumns:false,rownumbers:true,width:'100%',pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+        <thead>
+        <tr>
+          <th data-options="field:'id',width:100,checkbox: true,align:'center'"></th>
+          <th data-options="field:'repositoryNo',title:'仓库编号',width:130,align:'center'"></th>
+          <th data-options="field:'repositoryName',title:'仓库名字',width:120,align:'center'"></th>
+          <th data-options="field:'companyNo',title:'客户公司编号',width:160,align:'center'"></th>
+          <th data-options="field:'companyPhone',title:'客户公司电话',width:160,align:'center'"></th>
+          <th data-options="field:'companyAddress',title:'客户公司地址',width:120,align:'center'"></th>
+          <th data-options="field:'cargoNumber',title:'货物编码',width:160,align:'center'"></th>
+          <th data-options="field:'cargoType',title:'货物类型',width:160,align:'center'"></th>
+          <th data-options="field:'cargoCount',title:'货物数量',width:120,align:'center'"></th>
+          <th data-options="field:'cargoWeight',title:'货物重量',width:150,align:'center'"></th>
+          <th data-options="field:'cargoGuiGe',title:'货物规格',width:130,align:'center'"></th>
+  		<th data-options="field:'cargoName',title:'货物名称',width:100,align:'center'"></th>
+  		<th data-options="field:'entryTime',title:'入库时间',width:140,align:'center'"></th>
+  		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
+        </tr>
+        </thead>
+      </table>
+    </div>
+    </div>
+    </body>
+  
+  </html>

@@ -1,125 +1,218 @@
 <!DOCTYPE html>
 <html>
-  
-  <head>
-    <meta charset="UTF-8">
-    <title>欢迎页面-X-admin2.0</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="../css/font.css">
-    <link rel="stylesheet" href="../css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="../js/xadmin.js"></script>
-    <script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript" src="../js/loginFilter.js"></script>
-    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
-    <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
-  </head>
-  <script type="text/javascript">
-	  var tokenId=globalData.getToken();
-    $(function() {
-      $("#carInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'cars/findAll',//调用数据接口
-		queryParams: {
-			tokenId: tokenId
-					}
-      });
-    })
 
-    function searchCars() {
-      $("#carInfo").datagrid('load',{
-        carNumber:$("#carNumber").val(),
-		carNo:$("#carNo").val(),
-		cartype:$("#cartype").val(),
-		status:$("#status").val(),
-        tokenId: tokenId
-       }); 
-    }
+	<head>
+		<meta charset="UTF-8">
+		<title>欢迎页面-X-admin2.0</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+		<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../css/font.css">
+		<link rel="stylesheet" href="../css/xadmin.css">
+		<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/xadmin.js"></script>
+		<script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/loginFilter.js"></script>
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
+	</head>
+	<script type="text/javascript">
+		var tokenId = globalData.getToken();
+		$(function() {
+			$("#carInfo").datagrid({
+				method: 'post',
+				url: globalData.server + 'cars/findAll', //调用数据接口
+				queryParams: {
+					tokenId: tokenId
+				}
+			});
+		})
+
+		function searchCars() {
+			$("#carInfo").datagrid('load', {
+				carNumber: $("#carNumber").val(),
+				carNo: $("#carNo").val(),
+				cartype: $("#cartype").val(),
+				status: $("#status").val(),
+				tokenId: tokenId
+			});
+		}
+
+		/* 点击删除按钮时 */
+		function member_del(index) {
+			//将当前行数据填入表单
+			var data = $("#carInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			if(row.status==0){
+				layer.confirm('确定要删除此条信息吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(ind) {
+					var data = $("#carInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+					var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+					var id = row.id;
+					$.post(globalData.server + "cars/deleteCar", {
+						id: id,
+						tokenId: tokenId
+					}, function(res) {
+						if (res == true) {
+							layer.alert("删除成功", {
+								icon: 6
+							}, function() {
+								layer.close(index);
+								window.location.reload();
+							});
+						} else {
+							layer.alert("删除失败", {
+								icon: 5
+							}, function() {
+								// 获得frame索引
+								var index = parent.layer.getFrameIndex(window.name);
+								//关闭当前frame
+								layer.close(index);
+							});
+						}
+					}, 'json');
+				});
+			}else if(row.status==1){
+				layer.alert("该车辆还在运输中，不可以删除哟!!", {
+					icon: 4
+				});
+			}
+			
+		}
+
+		/* 点击修改按钮时 */
+		function adminShow(index) {
+			//将当前行数据填入表单
+			var data = $("#carInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id = row.id;
+			var ind = layer.open({
+				type: 2,
+				area: ['600px', '500px'],
+				offset: '100px',
+				shadeClose: true,
+				maxmin: true,
+				content: 'car-edit.html',
+				success: function(layero, ind) {
+					// 获取子页面的iframe
+					var iframe = window['layui-layer-iframe' + ind];
+					// 向子页面的全局函数child传参
+					iframe.child(id);
+				}
+			});
+		}
+		/* 状态渲染 */
+		function state(value, row, index) {
+			if (value == 0) {
+				return "未运货";
+			} else if (value == 1) {
+				return "运货中";
+			}
+		}
+
+		/* 按钮 */
+		function anniu(value, row, index) {
+			return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow(" + index +
+				")'><i class='layui-icon'>&#xe642;</i></a>" +
+				" <a title='删除' onclick='member_del(" + index + ")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i>";
+		}
+	</script>
 	
-	/* 按钮 */
-	function anniu(value, row, index){
-		return "<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
-	}
-  </script>
-  <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-               <div class="layui-inline">
-	               <label class="layui-form-label">车牌号</label>
-	               <div class="layui-inline">
-	                   <input type="text" placeholder="请输入车牌号" name="carNumber" id="carNumber" class="layui-input">
-	               </div>
-	           </div>
-			   <div class="layui-inline">
-			       <label class="layui-form-label">车辆编号</label>
-			       <div class="layui-inline">
-			           <input type="text" placeholder="请输入车辆编号" name="carNo" id="carNo" class="layui-input">
-			       </div>
-			   </div>
-			  
-			   
-			   <div class="layui-input-inline">
-			       <label class="layui-form-label">车辆类型</label>
-			       <div class="layui-input-inline">
-			           <select id="cartype" name="userSex">
-			               <option value="">请选择</option>
-			               <option value="货车">货车</option>
-			               <option value="半挂">半挂</option>
-			           </select>
-			       </div>
-			   </div>
-			   
-			   <div class="layui-input-inline">
-			       <label class="layui-form-label">状态</label>
-			       <div class="layui-input-inline">
-			           <select id="status" name="status">
-			               <option value="">请选择</option>
-			               <option value="0">未工作</option>
-			               <option value="1">工作中</option>
-						   <option value="2">工作完成</option>
-			           </select>
-			       </div>
-			   </div>
-			 
-	            <button class="layui-btn" type="button" onclick="searchCars()"><i class="layui-icon">&#xe615;</i></button>
-				<button class="layui-btn" onclick="refresh()" title="刷新">
-				  <i class="layui-icon">ဂ</i></button>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加车辆','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="carInfo" class="easyui-datagrid" title="车辆信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'carNumber',title:'车牌号',width:130,align:'center'"></th>
-        <th data-options="field:'carNo',title:'车辆编号',width:120,align:'center'"></th>
-        <th data-options="field:'zaiZhong',title:'载重',width:160,align:'center'"></th>
-        <th data-options="field:'brand',title:'品牌',width:160,align:'center'"></th>
-        <th data-options="field:'carType',title:'车辆类型',width:120,align:'center'"></th>
-        <th data-options="field:'safeTime',title:'车辆保险日期',width:160,align:'center'"></th>
-        <th data-options="field:'carMasterName',title:'车主姓名',width:160,align:'center'"></th>
-        <th data-options="field:'carMasterPhone',title:'车主电话',width:120,align:'center'"></th>
-        <th data-options="field:'identityCard',title:'车主证件号',width:140,align:'center'"></th>
-        <th data-options="field:'carMasterAddress',title:'车主所在地',width:150,align:'center'"></th>
-        <th data-options="field:'status',title:'车辆运输状态',width:150,align:'center'"></th>
-        <th data-options="field:'remark',title:'备注',width:130,align:'center'"></th>
-		<th data-options="field:'driverId',title:'司机名称',width:100,align:'center'"></th>
-		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
-  </body>
+	
+	<script type="text/javascript">
+		layui.use(['form','layer','jquery','laydate','table'], function(){
+		  var laydate = layui.laydate;
+		  var table = layui.table;
+		  $ = layui.jquery;
+		  var form=layui.form;
+			
+			 $.post(globalData.server+"cars/getCarType", {}, function (res) {
+						if (res.length> 0) {
+							$("#cartype").append("<option value=''>--请选择--</option>");
+							for (var i = 0; i < res.length; i++) {
+								var item = res[i];
+								$("<option value=" + item + ">" + item + "</option>").appendTo($("#cartype"));
+								form.render();
+							}
+						}
+					}, 'json');
+			 	
+		});
+		
+	</script>
+	<body>
+		<div class="x-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 x-so">
+					<div class="layui-inline">
+						<label class="layui-form-label">车牌号</label>
+						<div class="layui-inline">
+							<input type="text" placeholder="请输入车牌号" name="carNumber" id="carNumber" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">车辆编号</label>
+						<div class="layui-inline">
+							<input type="text" placeholder="请输入车辆编号" name="carNo" id="carNo" class="layui-input">
+						</div>
+					</div>
+
+
+					<div class="layui-input-inline">
+						<label class="layui-form-label">车辆类型</label>
+						<div class="layui-input-inline">
+							<select id="cartype" lay-verify="type" name="cartype">
+							</select>
+						</div>
+					</div>
+
+					<div class="layui-input-inline">
+						<label class="layui-form-label">状态</label>
+						<div class="layui-input-inline">
+							<select id="status" name="status">
+								<option value="">请选择</option>
+								<option value="0">未工作</option>
+								<option value="1">工作中</option>
+								<option value="2">工作完成</option>
+							</select>
+						</div>
+					</div>
+
+					<button class="layui-btn" type="button" onclick="searchCars()"><i class="layui-icon">&#xe615;</i></button>
+					<button class="layui-btn" onclick="refresh()" title="刷新">
+						<i class="layui-icon">ဂ</i></button>
+				</form>
+			</div>
+			<xblock>
+				<button class="layui-btn" onclick="x_admin_show('添加车辆','./car-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+			</xblock>
+			<div class="easyui-layout" id="productImgs_list" style="height: 650px;">
+				<table id="carInfo" class="easyui-datagrid" title="车辆信息" data-options="rownumbers:true,width:'100%',fitColumns:false,pageSize:10,singleSelect:false,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+					<thead>
+						<tr>
+							<th data-options="field:'id',width:100,align:'center'" hidden="true"></th>
+							<th data-options="field:'carNumber',title:'车牌号',width:130,align:'center'"></th>
+							<th data-options="field:'carNo',title:'车辆编号',width:120,align:'center'"></th>
+							<th data-options="field:'zaiZhong',title:'载重',width:160,align:'center'"></th>
+							<th data-options="field:'brand',title:'品牌',width:160,align:'center'"></th>
+							<th data-options="field:'cartype',title:'车辆类型',width:120,align:'center'"></th>
+							<th data-options="field:'safeTime',title:'车辆保险日期',width:180,align:'center'"></th>
+							<th data-options="field:'carMasterName',title:'车主姓名',width:160,align:'center'"></th>
+							<th data-options="field:'carMasterPhone',title:'车主电话',width:140,align:'center'"></th>
+							<th data-options="field:'identityCard',title:'车主证件号',width:160,align:'center'"></th>
+							<th data-options="field:'carMasterAddress',title:'车主所在地',width:160,align:'center'"></th>
+							<th data-options="field:'status',title:'车辆运输状态',width:150,align:'center',formatter:state"></th>
+							<th data-options="field:'remark',title:'备注',width:130,align:'center'"></th>
+							<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</body>
 
 </html>

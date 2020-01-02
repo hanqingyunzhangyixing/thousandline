@@ -31,41 +31,7 @@
          	          autocomplete="off" class="layui-input" readonly="true" lay-verify="required">
          	      </div>
          	  </div>
-      	  <!-- 密码-->
-         	 <!-- <div class="layui-form-item">
-         	      <label for="password" class="layui-form-label">
-         	          <span class="x-red">*</span>密码
-         	      </label>
-         	      <div class="layui-input-inline">
-         	          <input type="password" id="password" name="password" required="" lay-verify="pass"
-         	          autocomplete="off" class="layui-input">
-         	      </div> -->
-         	    <!--  <div class="layui-form-mid layui-word-aux">
-         	         最低五个字符
-         	      </div> -->
-         	  <!-- </div> -->
-      	  <!-- 性别-->
-         	  <div class="layui-form-item">
-         	      <label for="userSex" class="layui-form-label">
-         	          <span class="x-red">*</span>性别
-         	      </label>
-         	      <div class="layui-input-inline layui-form" lay-filter="selFilter">
-         	          <select id="userSex" name="userSex" class="valid">
-         	            <option value="男">男</option>
-         	            <option value="女">女</option>
-         	          </select>
-         	      </div>
-         	  </div>
-      	  <!-- 年龄-->
-         	  <div class="layui-form-item">
-         	      <label for="userAge" class="layui-form-label">
-         	          <span class="x-red">*</span>年龄
-         	      </label>
-         	      <div class="layui-input-inline">
-         	          <input type="text" id="userAge" name="userAge" required="required"
-         	          autocomplete="off" class="layui-input" lay-verify="number">
-         	      </div>
-         	  </div>
+      	 
       	  <!-- 手机号-->
          	  <div class="layui-form-item">
          	      <label for="userPhone" class="layui-form-label">
@@ -86,26 +52,6 @@
          	          autocomplete="off" class="layui-input" lay-verify="email">
          	      </div>
          	  </div>
-      	  <!-- 头像-->
-         	<!--  <div class="layui-form-item">
-         	      <label for="userImage" class="layui-form-label">
-         	          头像
-         	      </label>
-         	      <div class="layui-input-inline">
-         	          <input type="text" id="userImage" name="userImage" 
-         	          autocomplete="off" class="layui-input">
-         	      </div>
-         	  </div> -->
-      	  <!-- 所属角色-->
-         	 <!-- <div class="layui-form-item">
-         	      <label for="roleId" class="layui-form-label">
-         	          所属角色
-         	      </label>
-         	      <div class="layui-input-inline">
-         	          <input type="text" id="roleId" name="roleId" 
-         	          autocomplete="off" class="layui-input">
-         	      </div>
-         	  </div> -->
          	  <div class="layui-form-item">
          	      <label for="L_repass" class="layui-form-label">
          	      </label>
@@ -121,15 +67,8 @@
   		   $("#userAdd").serialize(),
   			function(res){
   				$("#userName").val(res.userName);
-  				/* $("#password").val(res.password); */
-  				$("#userAge").val(res.userAge);
   				$("#userPhone").val(res.userPhone);
   				$("#userEmail").val(res.userEmail);
-  				/* $("#userImage").val(res.userImage);
-  				$("#roleId").val(res.roleId); */
-  				$("#userSex").val(res.userSex);
-  				form.render("select","selFilter");
-  				
   			},
   			"json");
   			layui.use(['form','layer'], function(){

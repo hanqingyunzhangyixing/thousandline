@@ -1,159 +1,148 @@
 <!DOCTYPE html>
 <html>
-  
-  <head>
-    <meta charset="UTF-8">
-    <title>欢迎页面-X-admin2.0</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="../css/font.css">
-    <link rel="stylesheet" href="../css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="../js/xadmin.js"></script>
-    <script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript" src="../js/loginFilter.js"></script>
-    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
-    <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
-  </head>
-  <script type="text/javascript">
-	  var tokenId=globalData.getToken();
-    $(function() {
-     $("#driverInfo").datagrid({
-       method: 'post',
-       url: globalData.server + 'drivers/findAll',//调用数据接口
-	   queryParams:{
-		   tokenId:tokenId
-	   }
-     });
-    })
 
-    function searchDrivers() {
-         $("#driverInfo").datagrid('load',{
-           driverName:$("#driverName").val(),
-		   driverSex:$("#driverSex").val(),
-		   workStatus:$("#workStatus").val(),
-           tokenId: tokenId
-          }); 
-    }
-	
-/* 按钮 */	
-	  function anniu(value, row, index){
-	  return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow("+index+")'><i class='layui-icon'>&#xe642;</i></a>"
-			 +" <a title='删除' onclick='member_del("+index+")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i>";
+	<head>
+		<meta charset="UTF-8">
+		<title>欢迎页面-X-admin2.0</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+		<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../css/font.css">
+		<link rel="stylesheet" href="../css/xadmin.css">
+		<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/xadmin.js"></script>
+		<script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/loginFilter.js"></script>
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
+	</head>
+	<script type="text/javascript">
+		var tokenId = globalData.getToken();
+		$(function() {
+			$("#driverInfo").datagrid({
+				method: 'post',
+				url: globalData.server + 'drivers/findAll', //调用数据接口
+				queryParams: {
+					tokenId: tokenId
+				}
+			});
+
+		})
+
+		function searchDrivers() {
+			$("#driverInfo").datagrid('load', {
+				driverName: $("#driverName").val(),
+				driverSex: $("#driverSex").val(),
+				workStatus: $("#workStatus").val(),
+				tokenId: tokenId
+			});
 		}
-function adminShow(index){
-						//将当前行数据填入表单
-						var data = $("#driverInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
-						var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
-						var id=row.id;
-						var ind=layer.open({
-							type:2,
-							area:['600px','500px'],
-							offset:'100px',
-							shadeClose:true,
-							maxmin:true,
-							content:'driver-edit.html',
-							success: function (layero, ind) {
-								// 获取子页面的iframe
-								var iframe = window['layui-layer-iframe' + ind];
-								// 向子页面的全局函数child传参
-								iframe.child(id);
-							   }
-						 });
-					} 
-	/* 点击删除按钮时 */
-	 function member_del(index){
-		layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+
+		
+		/* 是否签到 */
+		function sign(value, row, index) {
+			if (value == 0) {
+				return "未签到";
+			} else if (value == 1) {
+				return "已签到";
+			} else if (value == 2) {
+				return "已签退";
+			}
+
+		}
+		/* 工作状态 */
+		function state(value, row, index) {
+            if(value==0){
+				return "未运货";
+			}else if(value==1){
+				return "运货中";
+			}else if(value==2){
+				return "休息";
+			}else if(value==3){
+				return "请假";
+			}
+
+		}
+
+		function adminShow(index) {
+			//将当前行数据填入表单
 			var data = $("#driverInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
 			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
-			var id=row.id;
-		 $.post(globalData.server+"drivers/deleteDriver?id="+id,function(res){
-			 if(res==true){
-				layer.alert("删除成功", {icon: 6},function () {
-					 layer.close(index);
-					 window.location.reload();
-				});
-			 }else{
-				 layer.alert("删除失败", {icon: 5},function () {
-					 // 获得frame索引
-					 var index = parent.layer.getFrameIndex(window.name);
-					 //关闭当前frame
-					 layer.close(index);
-				 });
-			 }
-		 },'json');
-		});
-	} 
-
-	
-	
-	
-  </script>
-  <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-	            <div class="layui-inline">
-	                <label class="layui-form-label">司机姓名</label>
-	                <div class="layui-inline">
-	                    <input type="text" placeholder="请输入司机姓名" name="driverName" id="driverName" class="layui-input">
-	                </div>
-	            </div>
-				<div class="layui-input-inline">
-				    <label class="layui-form-label">司机性别</label>
-				    <div class="layui-input-inline">
-				        <select id="driverSex" name="driverSex">
-				            <option value="">请选择</option>
-				            <option value="男">男</option>
-				            <option value="女">女</option>
-				        </select>
-				    </div>
-				</div>
-				<div class="layui-input-inline">
-				    <label class="layui-form-label">工作状态</label>
-				    <div class="layui-input-inline">
-				        <select id="workStatus" name="workStatus">
-				            <option value="">请选择</option>
-				            <option value="0">未运货</option>
-				            <option value="1">运货中</option>
-							<option value="2">休息</option>
-							<option value="3">请假</option>
-				        </select>
-				    </div>
-				</div>
-				
-	           <button class="layui-btn" type="button" onclick="searchDrivers()"><i class="layui-icon">&#xe615;</i></button>
-	           <button class="layui-btn" onclick="refresh()" title="刷新">
-	             <i class="layui-icon">ဂ</i></button>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加司机','driver-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="driverInfo" class="easyui-datagrid" title="司机信息" data-options="rownumbers:true,height:'60%',width:'100%',fitColumns:false,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-       <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-       <th data-options="field:'driverName',title:'司机姓名',width:130,align:'center'"></th>
-       <th data-options="field:'driverSex',title:'司机性别',width:120,align:'center'"></th>
-       <th data-options="field:'driverAge',title:'司机年龄',width:160,align:'center'"></th>
-       <th data-options="field:'identityCard',title:'证件号码',width:160,align:'center'"></th>
-       <th data-options="field:'images',title:'头像',width:120,align:'center'"></th>
-       <th data-options="field:'driverTime',title:'司机驾龄',width:160,align:'center'"></th>
-       <th data-options="field:'driverLevel',title:'驾驶证级别',width:160,align:'center'"></th>
-       <th data-options="field:'idSignIn',title:'是否签到',width:120,align:'center'"></th>
-       <th data-options="field:'workStatus',title:'工作状态',width:140,align:'center'"></th>
-       <th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
-  </body>
+			var id = row.id;
+			var ind = layer.open({
+				type: 2,
+				area: ['600px', '500px'],
+				offset: '100px',
+				shadeClose: true,
+				maxmin: true,
+				content: 'driver-edit.html',
+				success: function(layero, ind) {
+					// 获取子页面的iframe
+					var iframe = window['layui-layer-iframe' + ind];
+					// 向子页面的全局函数child传参
+					iframe.child(id);
+				}
+			});
+		}
+	</script>
+	<body>
+		<div class="x-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 x-so">
+					<div class="layui-inline">
+						<label class="layui-form-label">司机姓名</label>
+						<div class="layui-inline">
+							<input type="text" placeholder="请输入司机姓名" name="driverName" id="driverName" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-input-inline">
+						<label class="layui-form-label">司机性别</label>
+						<div class="layui-input-inline">
+							<select id="driverSex" name="driverSex">
+								<option value="">请选择</option>
+								<option value="男">男</option>
+								<option value="女">女</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-input-inline">
+						<label class="layui-form-label">工作状态</label>
+						<div class="layui-input-inline">
+							<select id="workStatus" name="workStatus">
+								<option value="">请选择</option>
+								<option value="0">未运货</option>
+								<option value="1">运货中</option>
+								<option value="2">休息</option>
+								<option value="3">请假</option>
+							</select>
+						</div>
+					</div>
+					<button class="layui-btn" type="button" onclick="searchDrivers()"><i class="layui-icon">&#xe615;</i></button>
+					<button class="layui-btn" onclick="refresh()" title="刷新">
+						<i class="layui-icon">ဂ</i></button>
+				</form>
+			</div>
+			
+			<div class="easyui-layout" id="productImgs_list" style="height: 650px;">
+				<table id="driverInfo" class="easyui-datagrid" title="司机信息" data-options="rownumbers:true,width:'100%',fitColumns:false,pageSize:10,singleSelect:false,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
+					<thead>
+						<tr>
+							<th data-options="field:'id',width:100,align:'center'" hidden="true"></th>
+							<th data-options="field:'driverName',title:'司机姓名',width:130,align:'center'"></th>
+							<th data-options="field:'driverSex',title:'司机性别',width:120,align:'center'"></th>
+							<th data-options="field:'driverAge',title:'司机年龄',width:160,align:'center'"></th>
+							<th data-options="field:'identityCard',title:'证件号码',width:160,align:'center'"></th>
+							<th data-options="field:'driverTime',title:'司机驾龄',width:140,align:'center'"></th>
+							<th data-options="field:'driverLevel',title:'驾驶证级别',width:140,align:'center'"></th>
+							<th data-options="field:'isSignIn',title:'是否签到',width:120,align:'center',formatter:sign"></th>
+							<th data-options="field:'workStatus',title:'工作状态',width:140,align:'center',formatter:state"></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</body>
 
 </html>

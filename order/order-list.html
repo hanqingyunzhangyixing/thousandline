@@ -1,331 +1,549 @@
 <!DOCTYPE html>
 <html>
-  
-  <head>
-    <meta charset="UTF-8">
-    <title>欢迎页面-X-admin2.0</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="../css/font.css">
-    <link rel="stylesheet" href="../css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="../js/xadmin.js"></script>
-    <script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript" src="../js/loginFilter.js"></script>
-    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
-    <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
-  </head>
-  <script type="text/javascript">
-  layui.use('laydate', function(){
-    var laydate = layui.laydate;
-    //执行一个laydate实例
-    laydate.render({
-      elem: '#beginOrderCreateTime', //指定元素
-	  type: 'datetime'
-    });
-	//执行一个laydate实例
-	laydate.render({
-	  elem: '#endOrderCreateTime', //指定元素
-	  type: 'datetime'
-	});
-	//执行一个laydate实例
-	laydate.render({
-	  elem: '#startOrderEndTime', //指定元素
-	  type: 'datetime'
-	});
-	//执行一个laydate实例
-	laydate.render({
-	  elem: '#endOrderEndTime', //指定元素
-	  type: 'datetime'
-	});
-  });
-  </script>
-  <script type="text/javascript">
-	  var tokenId = globalData.getToken();
-    $(function() {
-      searchOrder();
-    })
 
-    function searchOrder() {
-      $("#orderInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'orders/queryOrderBypage',//调用数据接口
-		queryParams: {
-		    	cargoName: $("#cargoName").val(),
-		    	cricuitsNo: $("#cricuitsNo").val(),
-		    	senderName: $("#senderName").val(),
-				receiver: $("#receiver").val(),
-				orderNo: $("#orderNo").val(),
-				beginOrderCreateTime:$("#beginOrderCreateTime").val(),
-				endOrderCreateTime:$("#endOrderCreateTime").val(),
-				startOrderEndTime:$("#startOrderEndTime").val(),
-				endOrderEndTime:$("#endOrderEndTime").val(),
-				packingUnit:$("#packingUnit").val(),
-				status:$("#status").val(),
-				cargoType:$("#cargoType").val(),
+	<head>
+		<meta charset="UTF-8">
+		<title>欢迎页面-X-admin2.0</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+		<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../css/font.css">
+		<link rel="stylesheet" href="../css/xadmin.css">
+		<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/xadmin.js"></script>
+		<script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/loginFilter.js"></script>
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
+	</head>
+	<script type="text/javascript">
+		layui.use('laydate', function() {
+			var laydate = layui.laydate;
+			//执行一个laydate实例
+			laydate.render({
+				elem: '#beginOrderCreateTime', //指定元素
+				type: 'datetime'
+			});
+			//执行一个laydate实例
+			laydate.render({
+				elem: '#endOrderCreateTime', //指定元素
+				type: 'datetime'
+			});
+			//执行一个laydate实例
+			laydate.render({
+				elem: '#startOrderEndTime', //指定元素
+				type: 'datetime'
+			});
+			//执行一个laydate实例
+			laydate.render({
+				elem: '#endOrderEndTime', //指定元素
+				type: 'datetime'
+			});
+		});
+	</script>
+	<script type="text/javascript">
+		var tokenId = globalData.getToken();
+		$(function() {
+			searchOrder();
+		})
+
+		function searchOrder() {
+			$("#orderInfo").datagrid({
+				method: 'post',
+				url: globalData.server + 'orders/queryOrderBypage', //调用数据接口
+				queryParams: {
+					cargoName: $("#cargoName").val(),
+					senderName: $("#senderName").val(),
+					receiver: $("#receiver").val(),
+					orderNo: $("#orderNo").val(),
+					beginOrderCreateTime: $("#beginOrderCreateTime").val(),
+					endOrderCreateTime: $("#endOrderCreateTime").val(),
+					startOrderEndTime: $("#startOrderEndTime").val(),
+					endOrderEndTime: $("#endOrderEndTime").val(),
+					packingUnit: $("#packingUnit").val(),
+					status: $("#status").val(),
+					cargoType: $("#cargoType").val(),
+					tokenId: tokenId
+				}
+			});
+		}
+		/**根据用户id获取角色信息**/
+		$(function() {
+			$.post(globalData.server + "userrole/getRolesById", {
 				tokenId: tokenId
+			}, function(res) {
+				$("#getName").val(res.roles[0].roleName);
+			}, "json");
+		})
+
+		/* 按钮 */
+		function anniu(value, row, index) {
+			if ($("#getName").val() == '驾驶员') {
+				$("#dc").hide();
+				$("#pl").hide();
+				$("#dr").hide();
+				$("#add").hide();
 			}
-      });
-    }
-	
-	/* 操作按钮 */
-	function anniu(value, row, index){
-		return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow("+index+")'><i class='layui-icon'>&#xe642;</i></a>"
-	          +" <a title='删除' onclick='member_del("+index+")' href='javascript:void(0)'><i class='layui-icon'>&#xe640;</i>";
-	}
-	/* 点击修改按钮时 */
-	 function adminShow(index){
-		//将当前行数据填入表单
-		var data = $("#orderInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
-		var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
-		var id=row.id;
-		var ind=layer.open({
-					type:2,
-					area:['600px','500px'],
-					offset:'100px',
-					shadeClose:true,
-					maxmin:true,
-					content:'order-edit.html',
-					success: function (layero, ind) {
-							// 获取子页面的iframe
-							var iframe = window['layui-layer-iframe' + ind];
-							// 向子页面的全局函数child传参
-							iframe.child(id);
-					     }
-				 });
-	} 
-	
-	/* 点击删除按钮时 */
-	function member_del(index){
-		layer.confirm('确定要删除此条信息吗?', {icon: 3, title:'提示'}, function(ind){
+			if ($("#getName").val() == '业务员') {
+				$("#dc").hide();
+				$("#pl").hide();
+			}
+			if ($("#getName").val() == '调度员') {
+				$("#dr").hide();
+				$("#add").hide();
+			}
+
+			if ($("#getName").val() == '驾驶员') {
+				return "<a title='订单完成' onclick='endOrder(" + index +
+					")' href='javascript:void(0)'><i class='layui-icon'>&#xe605;</i></a>";
+			}
+
+			if ($("#getName").val() == '业务员') {
+				return "<a herf='javascript:void(0)' title='编辑' onclick='adminShow(" + index +
+					")'><i class='layui-icon'>&#xe642;</i></a>" +
+					"<a title='取消订单' onclick='quxiaoOrder(" + index +
+					")' href='javascript:void(0)'><i class='layui-icon'>&#xe64d;</i></a>";
+			}
+			if ($("#getName").val() == '调度员') {
+				return "<a herf='javascript:void(0)' title='分配' onclick='hand(" + index +
+					")'><i class='layui-icon'>&#xe641;</i></a>" +
+					"<a herf='javascript:void(0)' title='审核' onclick='shenhe(" + index +
+					")'><i class='layui-icon'>&#xe601;</i></a>" +
+					"<a title='取消订单' onclick='quxiaoOrder(" + index +
+					")' href='javascript:void(0)'><i class='layui-icon'>&#xe64d;</i></a>";
+			}
+
+			if ($("#getName").val() == '总经理') {
+				return "<a herf='javascript:void(0)' title='分配' onclick='hand(" + index +
+					")'><i class='layui-icon'>&#xe641;</i></a>" +
+					"<a herf='javascript:void(0)' title='审核' onclick='shenhe(" + index +
+					")'><i class='layui-icon'>&#xe601;</i></a>" +
+					"<a herf='javascript:void(0)' title='编辑' onclick='adminShow(" + index +
+					")'><i class='layui-icon'>&#xe642;</i></a>" +
+					"<a title='取消订单' onclick='quxiaoOrder(" + index +
+					")' href='javascript:void(0)'><i class='layui-icon'>&#xe64d;</i></a>";
+			}
+
+		}
+
+		/**订单审核*/
+		function shenhe(index) {
+			//将当前行数据填入表单
 			var data = $("#orderInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
 			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
 			var id=row.id;
-		 $.post(globalData.server+"orders/deleteOneOrder",{id:id,tokenId:tokenId},function(res){
-		     if(res==true){
-		 		layer.alert("删除成功", {icon: 6},function () {
-		 		     layer.close(index);
-		 			window.location.reload();
-		 		});
-		     }else{
-		         layer.alert("删除失败", {icon: 5},function () {
-		             // 获得frame索引
-		             var index = parent.layer.getFrameIndex(window.name);
-		             //关闭当前frame
-		             layer.close(index);
-		         });
-		     }
-		 },'json');
-		});
-	}
-  </script>
-  <script type="text/javascript">
-  		//导出选中的学生记录到excel表中
-  				function daoChu() {
-  					var ids = "";
-  					var row = $('#orderInfo').datagrid('getChecked');
-  					console.log("sssssss" + row.id);
-  					if(row && row.length > 0) {
-  						$.each(row, function(i, e) {
-  							console.log("ssssssaaaaa" + e.id)
-  							if(i == 0) {
-  								ids += e.id;
-  							} else {
-  								ids += "," + e.id;
-  							}
-  						}); 
-  						window.location.href = globalData.server+"orders/exportOrders?ids=" + ids+ "&tokenId=" + globalData.getToken();
-  					} else {
-  						layer.confirm('还没有选中学生,要导出所有吗！',{icon:3,title:"提示"}, function(r) {
-  							if(r) {
-  								window.location.href = globalData.server+"orders/exportOrders?tokenId=" + globalData.getToken();
-  							}
-  						});
-  					}
-  	
-  				}
-    </script>
-    	<script type="text/javascript">
-    			function daoRu(){
-    			$("#uploadWindow").window('open');
-    		}
-    		function upload() {
-    				var formData = new FormData();//表单数据对象				
-    				formData.append("file", $("#avatar").prop('files')[0] );//文件		
-    				/* parent.$.messager.progress({
-    									title : '提示',
-    									text : '正在拼命上传文件，请稍候...'
-    							}); */
-    				$.ajax({
-    					url: globalData.server+"orders/uploadOrder",
-    					type: 'POST',
-    					data: formData,
-    					dataType:'json',
-    					// 告诉jQuery不要去处理发送的数据
-    					processData: false,
-    					// 告诉jQuery不要去设置Content-Type请求头
-    					contentType: false,
-    					beforeSend: function() {
-    						console.log("正在拼命上传文件，请稍候...");
-    					},
-    					success: function(res) {
-    						if(res.success==true){
-    							layer.msg("上传成功");
-    							//parent.$.messager.progress('close');
-    							$("#uploadWindow").window('close');	
-    							searchOrder(); //查询
-    						}else{
-    							layer.msg("提示消息","上传失败");
-    						}
-    					}          
-    					
-    				});
-    			}
-    	</script>
-  <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-				          <div class="layui-inline">
-				              <label class="layui-form-label">货物名称</label>
-				              <div class="layui-inline">
-				                  <input type="text" placeholder="请输入货物名称" name="cargoName" id="cargoName" class="layui-input">
-				              </div>
-				          </div>
-						  
-						  <div class="layui-inline">
-						             <label class="layui-form-label">线路名称</label>
-						             <div class="layui-inline">
-						                 <input type="text" placeholder="请输入线路名称" name="cricuitsNo" id="cricuitsNo" class="layui-input">
-						             </div>
-						         </div>
-								 
-						 <div class="layui-inline">
-									<label class="layui-form-label">发货方</label>
-									<div class="layui-inline">
-										<input type="text" placeholder="请输入发货方" name="senderName" id="senderName" class="layui-input">
-									</div>
-								</div>
-										
-						<div class="layui-inline">
-								   <label class="layui-form-label">收货方</label>
-								   <div class="layui-inline">
-									   <input type="text" placeholder="请输入收货方" name="receiver" id="receiver" class="layui-input">
-								   </div>
-							   </div>
-																		 
-					 <div class="layui-inline">
-								<label class="layui-form-label">订单编号</label>
-								<div class="layui-inline">
-									<input type="text" placeholder="请输入订单编号" name="orderNo" id="orderNo" class="layui-input">
-								</div>
-							</div>
-							<div class="layui-inline"> 
-							  <label class="layui-form-label">创建时间</label>
-							  <input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="beginOrderCreateTime">
-							  ~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endOrderCreateTime">
-							</div>
-							<div class="layui-inline">
-							  <label class="layui-form-label">完成时间</label>
-							  <input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="startOrderEndTime">
-							  ~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endOrderEndTime">
-							</div>
-						
-						<div class="layui-input-inline">
-						    <label class="layui-form-label">包装单位</label>
-						    <div class="layui-input-inline">
-						        <select id="packingUnit" name="packingUnit">
-						            <option value="">请选择状态</option>
-						            <option value="包">包</option>
-						            <option value="箱">箱</option>
-									<option value="条">条</option>
-						        </select>
-						    </div>
-						</div>
-				          
-				          <div class="layui-input-inline">
-				              <label class="layui-form-label">订单状态</label>
-				              <div class="layui-input-inline">
-				                  <select id="status" name="status">
-				                      <option value="">请选择状态</option>
-				                      <option value="0">待出库</option>
-				                      <option value="1">已揽件</option>
-									  <option value="2">已出库</option>
-									  <option value="3">待发货</option>
-									  <option value="4">已发货</option>
-									  <option value="5">配送中</option>
-									  <option value="6">已到货</option>
-				                  </select>
-				              </div>
-				          </div>
-						  <div class="layui-input-inline">
-						      <label class="layui-form-label">货物类型</label>
-						      <div class="layui-input-inline">
-						          <select id="cargoType" name="cargoType">
-						              <option value="">请选择状态</option>
-						              <option value="0">一般货物</option>
-						              <option value="1">易燃易爆</option>
-									  <option value="2">易碎货物</option>
-									  <option value="3">活物</option>
-						          </select>
-						      </div>
-						  </div>
-				 
-				<button class="layui-btn" type="button" onclick="searchOrder()"><i class="layui-icon">&#xe615;</i></button>
-				<button class="layui-btn" onclick="refresh()" title="刷新">
-				  <i class="layui-icon">ဂ</i></button>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
-	         <button class="layui-btn" onclick="x_admin_show('添加订单','order-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	          <button class="layui-btn layui-btn-normal"" onclick="daoRu()"><i class="layui-icon">&#xe61a;</i>导入</button>
-	          <button class="layui-btn layui-btn-warm" onclick="daoChu()"><i class="layui-icon">&#xe619;</i>导出</button> 
-			</xblock>
-			
-			
-			
-			<div id="uploadWindow" class="easyui-window" title="导入Excel数据" style="padding: 10px;" data-options="iconCls:'icon-add',minimizable:false,maximizable:false,closed:true,doSize:false">
-							<input type="file" id="avatar" name="avatar">
-							<input id="uploadBtn" type="button" value="开始上传" onclick="upload()" />
-						</div>
+			sessionStorage.setItem("id", id);
+			alert(id);
+			if (row.status == 0) {
+				var ind = layer.open({
+					type: 2,
+					area: ['500px', '200px'],
+					offset: '80px',
+					shadeClose: true,
+					maxmin: true,
+					content: 'order-shenhe.html',
+					success: function(layero, ind) {
+						// 获取子页面的iframe
+						var iframe = window['layui-layer-iframe' + ind];
+						// 向子页面的全局函数child传参
+						iframe.child(id);
+					}
+				});
+			} else if (row.status == 7) {
+				layer.alert("订单已取消!!", {
+					icon: 4
+				});
+			} else if (row.status == 1) {
+				layer.alert("订单已审核!!", {
+					icon: 4
+				});
+			} else if (row.status == 3) {
+				layer.alert("订单已发货!!", {
+					icon: 4
+				});
+			} else if (row.status == 6) {
+				layer.alert("订单已完成!!", {
+					icon: 4
+				});
+			}
+		}
 
-  <div class="easyui-layout" id="productImgs_list">
-    <table id="orderInfo" class="easyui-datagrid" title="订单信息" data-options="rownumbers:true,width:'100%',fitColumns:false,pageSize:5,singleSelect:false, showFooter: true,
+
+		/* 点击取消订单按钮时 */
+		function quxiaoOrder(index) {
+			var data = $("#orderInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id = row.id;
+			if (row.status != 7) {
+				layer.confirm('确定要取消订单吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(ind) {
+
+					$.post(globalData.server + "orders/quxiaoOrder", {
+						id: id,
+						tokenId: tokenId
+					}, function(res) {
+						if (res == true) {
+							layer.alert("取消订单成功！", {
+								icon: 6
+							}, function() {
+								layer.close(index);
+								window.location.reload();
+							});
+						} else {
+							layer.alert("取消订单失败！", {
+								icon: 5
+							}, function() {
+								// 获得frame索引
+								var index = parent.layer.getFrameIndex(window.name);
+								//关闭当前frame
+								layer.close(index);
+							});
+						}
+					}, 'json');
+				});
+			} else {
+				layer.alert("订单已经取消!!", {
+					icon: 4
+				});
+			}
+
+		}
+
+		/* 点击修改按钮时 */
+		function adminShow(index) {
+			//将当前行数据填入表单
+			var data = $("#orderInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id = row.id;
+			var ind = layer.open({
+				type: 2,
+				area: ['600px', '500px'],
+				offset: '100px',
+				shadeClose: true,
+				maxmin: true,
+				content: 'order-edit.html',
+				success: function(layero, ind) {
+					// 获取子页面的iframe
+					var iframe = window['layui-layer-iframe' + ind];
+					// 向子页面的全局函数child传参
+					iframe.child(id);
+				}
+			});
+		}
+
+		/* 点击删除按钮时 */
+		function member_del(index) {
+			layer.confirm('确定要删除此条信息吗?', {
+				icon: 3,
+				title: '提示'
+			}, function(ind) {
+				var data = $("#orderInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+				var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+				var id = row.id;
+				$.post(globalData.server + "orders/deleteOneOrder", {
+					id: id,
+					tokenId: tokenId
+				}, function(res) {
+					if (res == true) {
+						layer.alert("删除成功", {
+							icon: 6
+						}, function() {
+							layer.close(index);
+							window.location.reload();
+						});
+					} else {
+						layer.alert("删除失败", {
+							icon: 5
+						}, function() {
+							// 获得frame索引
+							var index = parent.layer.getFrameIndex(window.name);
+							//关闭当前frame
+							layer.close(index);
+						});
+					}
+				}, 'json');
+			});
+		}
+		/* 点击批量操作按钮 */
+		function hand(index) {
+			//将当前行数据填入表单
+			var data = $("#orderInfo").datagrid("getData"); //获取datagrid对应的json数据（对象集合）
+			var row = data.rows[index]; //获取第index行对应的json对象。 index为传递过来的索引参数，从0开始，就像数组下标。
+			var id = row.orderNo;
+			if (row.status == 1) {
+				var ind = layer.open({
+					title: '分配资源',
+					type: 2,
+					area: ['400px', '400px'],
+					offset: '100px',
+					shadeClose: true,
+					maxmin: true,
+					content: 'order-pl.html',
+					success: function(layero, ind) {
+						// 获取子页面的iframe
+						var iframe = window['layui-layer-iframe' + ind];
+						// 向子页面的全局函数child传参
+						iframe.child(id);
+					}
+				});
+			} else if (row.status == 0) {
+				layer.alert("订单还未审核!!", {
+					icon: 4
+				});
+			} else if (row.status == 7) {
+				layer.alert("订单已取消!!", {
+					icon: 4
+				});
+			} else if (row.status == 3) {
+				layer.alert("订单已发货!!", {
+					icon: 4
+				});
+			} else if (row.status == 6) {
+				layer.alert("订单已完成!!", {
+					icon: 4
+				});
+			}
+
+		}
+
+
+
+		/*订单完成**/
+		function endOrder(index) {
+			var data = $("#orderInfo").datagrid("getData");
+			var row = data.rows[index];
+			if (row.status != 6) {
+				$.post(globalData.server + "orders/updateState", {
+					orderNo: row.orderNo,
+					tokenId: tokenId
+				}, function(res) {
+					if (res.success == true) {
+						layer.alert(res.message, {
+							icon: 1
+						}, function() {
+							layer.close(index);
+							window.location.reload();
+						});
+					} else {
+						layer.alert("确认收货失败了呀!", {
+							icon: 2
+						}, function() {
+							// 获得frame索引
+							var index = parent.layer.getFrameIndex(window.name);
+							//关闭当前frame
+							layer.close(index);
+						});
+					}
+				}, "json");
+			} else {
+				layer.alert("订单已经确认收货过了呀!!", {
+					icon: 4
+				});
+			}
+		}
+
+
+
+		/* 订单状态 */
+		function dingdan(value, row, index) {
+			if (value == 0) {
+				return "待审核";
+			} else if (value == 1) {
+				return "审核通过";
+			} else if (value == 3) {
+				return "已发货";
+			} else if (value == 5) {
+				return "配送中";
+			} else if (value == 6) {
+				return "已到货";
+			} else {
+				return "已取消";
+			}
+		}
+		/* 货物类型 */
+		function type(value, row, index) {
+			if (value == 0) {
+				return "一般货物";
+			} else if (value == 1) {
+				return "易燃易爆";
+			} else if (value == 2) {
+				return "易碎货物";
+			} else {
+				return "活物";
+			}
+		}
+	</script>
+	<script type="text/javascript">
+		//导出选中的学生记录到excel表中
+		function daoChu() {
+			var ids = "";
+			var row = $('#orderInfo').datagrid('getChecked');
+			console.log("sssssss" + row.id);
+			if (row && row.length > 0) {
+				$.each(row, function(i, e) {
+					console.log("ssssssaaaaa" + e.id)
+					if (i == 0) {
+						ids += e.id;
+					} else {
+						ids += "," + e.id;
+					}
+				});
+				window.location.href = globalData.server + "orders/exportOrders?ids=" + ids + "&tokenId=" + globalData.getToken();
+			} else {
+				layer.confirm('还没有选中学生,要导出所有吗！', {
+					icon: 3,
+					title: "提示"
+				}, function(r) {
+					if (r) {
+						window.location.href = globalData.server + "orders/exportOrders?tokenId=" + globalData.getToken();
+					}
+				});
+			}
+		}
+	</script>
+	<script type="text/javascript">
+		function daoRu() {
+			$("#uploadWindow").window('open');
+		}
+
+		function upload() {
+			var formData = new FormData(); //表单数据对象				
+			formData.append("file", $("#avatar").prop('files')[0]); //文件		
+			parent.$.messager.progress({
+				title: '提示',
+				text: '正在拼命上传文件，请稍候...'
+			});
+			$.ajax({
+				url: globalData.server + "orders/uploadOrder",
+				type: 'POST',
+				data: formData,
+				dataType: 'json',
+				// 告诉jQuery不要去处理发送的数据
+				processData: false,
+				// 告诉jQuery不要去设置Content-Type请求头
+				contentType: false,
+				beforeSend: function() {
+					console.log("正在拼命上传文件，请稍候...");
+				},
+				success: function(res) {
+					if (res.success == true) {
+						layer.msg("上传成功");
+						//parent.$.messager.progress('close');
+						$("#uploadWindow").window('close');
+						searchOrder(); //查询
+					} else {
+						layer.msg("提示消息", "上传失败");
+					}
+				}
+
+			});
+		}
+	</script>
+	<body>
+		<input type="hidden" id="getName" />
+		<div class="x-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 x-so">
+					<div class="layui-inline">
+						<label class="layui-form-label">订单编号</label>
+						<div class="layui-inline">
+							<input type="text" placeholder="请输入订单编号" name="orderNo" id="orderNo" class="layui-input">
+						</div>
+					</div>
+
+					<div class="layui-inline">
+						<label class="layui-form-label">发货方</label>
+						<div class="layui-inline">
+							<input type="text" placeholder="请输入发货方" name="senderName" id="senderName" class="layui-input">
+						</div>
+					</div>
+
+					<div class="layui-inline">
+						<label class="layui-form-label">收货方</label>
+						<div class="layui-inline">
+							<input type="text" placeholder="请输入收货方" name="receiver" id="receiver" class="layui-input">
+						</div>
+					</div>
+
+					<div class="layui-inline">
+						<label class="layui-form-label">创建时间</label>
+						<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="beginOrderCreateTime">
+						~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endOrderCreateTime">
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">完成时间</label>
+						<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="startOrderEndTime">
+						~<input type="text" placeholder="yyyy-MM-dd" class="layui-input" id="endOrderEndTime">
+					</div>
+
+					<div class="layui-input-inline">
+						<label class="layui-form-label">订单状态</label>
+						<div class="layui-input-inline">
+							<select id="status" name="status">
+								<option value="">请选择状态</option>
+								<option value="0">待审核</option>
+								<option value="1">审核通过</option>
+								<option value="3">已发货</option>
+								<option value="6">已到货</option>
+								<option value="7">已取消</option>
+							</select>
+						</div>
+					</div>
+
+					<button class="layui-btn" type="button" onclick="searchOrder()"><i class="layui-icon">&#xe615;</i></button>
+					<button class="layui-btn" onclick="refresh()" title="刷新">
+						<i class="layui-icon">ဂ</i></button>
+				</form>
+			</div>
+			<xblock>
+				<button class="layui-btn" id="add" onclick="x_admin_show('添加订单','order-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+				<button class="layui-btn layui-btn-normal" id="dr" onclick=" daoRu()"><i class="layui-icon">&#xe61a;</i>导入</button>
+				<button class="layui-btn layui-btn-warm" id="dc" onclick="daoChu()"><i class="layui-icon">&#xe619;</i>导出</button>
+			</xblock>
+
+
+
+			<div id="uploadWindow" class="easyui-window" title="导入Excel数据" style="padding: 10px;" data-options="iconCls:'icon-add',minimizable:false,maximizable:false,closed:true,doSize:false">
+				<input type="file" id="avatar" name="avatar">
+				<input id="uploadBtn" type="button" value="开始上传" onclick="upload()" />
+			</div>
+
+			<div class="easyui-layout" id="productImgs_list">
+				<table id="orderInfo" class="easyui-datagrid" title="订单信息" data-options="rownumbers:true,width:'100%',fitColumns:false,pageSize:10,singleSelect:false, showFooter: true,
            checkOnSelect:true,selectOnCheck:true,remoteSort:false,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-		<th data-options="field:'ck',align:'center'"checkbox="true"></th>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'orderNo',title:'订单编号',width:200,align:'center'"></th>
-        <th data-options="field:'senderName',title:'发货方',width:200,align:'center'"></th>
-        <th data-options="field:'senderPhone',title:'发货方联系方式',width:200,align:'center'"></th>
-        <th data-options="field:'sendAddress',title:'发货地址',width:200,align:'center'"></th>
-        <th data-options="field:'receiver',title:'收货方',width:120,align:'center'"></th>
-        <th data-options="field:'receiverPhone',title:'收货方联系方式',width:200,align:'center'"></th>
-        <th data-options="field:'receiverAddress',title:'收货方地址',width:200,align:'center'"></th>
-        <th data-options="field:'status',title:'订单状态',width:200,align:'center'"></th>
-        <th data-options="field:'cargoNo',title:'货物编号',width:200,align:'center'"></th>
-        <th data-options="field:'cargoName',title:'货物名称',width:200,align:'center'"></th>
-        <th data-options="field:'tiaoma',title:'条码',width:200,align:'center'"></th>
-        <th data-options="field:'cargoType',title:'货物类型',width:200,align:'center'"></th>
-		<th data-options="field:'cargoWeight',title:'货物重量',width:200,align:'center'"></th>
-		<th data-options="field:'orderCreateTime',title:'订单创建时间',width:200,align:'center'"></th>
-		<th data-options="field:'orderEndTime',title:'订单完成时间',width:200,align:'center'"></th>
-		<th data-options="field:'cargoTiJi',title:'货物体积',width:200,align:'center'"></th>
-		<th data-options="field:'packingUnit',title:'包装单位',width:200,align:'center'"></th>
-		<th data-options="field:'cargoMember',title:'货物数量',width:200,align:'center'"></th>
-		<th data-options="field:'cricuitsNo',title:'线路编号',width:200,align:'center'"></th>
-		<th data-options="field:'remark',title:'备注',width:200,align:'center'"></th>
-		<th data-options="field:'caozuo',title:'操作',width:200,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
-  </body>
+					<thead>
+						<tr>
+							<th data-options="field:'ck',align:'center'" checkbox="true"></th>
+							<th data-options="field:'id',width:100,align:'center'" hidden="true"></th>
+							<th data-options="field:'orderNo',title:'订单编号',width:200,align:'center'"></th>
+							<th data-options="field:'senderName',title:'发货方',width:200,align:'center'"></th>
+							<th data-options="field:'senderPhone',title:'发货方联系方式',width:200,align:'center'"></th>
+							<th data-options="field:'sendAddress',title:'发货地址',width:200,align:'center'"></th>
+							<th data-options="field:'receiver',title:'收货方',width:120,align:'center'"></th>
+							<th data-options="field:'receiverPhone',title:'收货方联系方式',width:200,align:'center'"></th>
+							<th data-options="field:'receiverAddress',title:'收货方地址',width:200,align:'center'"></th>
+							<th data-options="field:'status',title:'订单状态',width:200,align:'center',formatter:dingdan"></th>
+							<th data-options="field:'cargoNo',title:'货物编号',width:200,align:'center'"></th>
+							<th data-options="field:'cargoName',title:'货物名称',width:200,align:'center'"></th>
+							<th data-options="field:'cargoType',title:'货物类型',width:200,align:'center',formatter:type"></th>
+							<th data-options="field:'cargoWeight',title:'货物重量',width:200,align:'center'"></th>
+							<th data-options="field:'orderCreateTime',title:'订单创建时间',width:200,align:'center'"></th>
+							<th data-options="field:'orderEndTime',title:'订单完成时间',width:200,align:'center'"></th>
+							<th data-options="field:'cargoTiJi',title:'货物体积',width:200,align:'center'"></th>
+							<th data-options="field:'packingUnit',title:'包装单位',width:200,align:'center'"></th>
+							<th data-options="field:'cargoMember',title:'货物数量',width:200,align:'center'"></th>
+							<th data-options="field:'cricuitsName',title:'线路名称',width:200,align:'center'"></th>
+							<th data-options="field:'remark',title:'备注',width:200,align:'center'"></th>
+							<th data-options="field:'caozuo',title:'操作',width:200,align:'center',formatter: anniu"></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</body>
 
 </html>

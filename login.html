@@ -1,56 +1,80 @@
 <!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>千行物流管理系统后台登录</title>
-	<meta name="renderer" content="webkit|ie-comp|ie-stand">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="./css/font.css">
-	<link rel="stylesheet" href="./css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script src="./lib/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="./js/xadmin.js"></script>
-    <script type="text/javascript" src="js/global.js"></script>
-</head>
-<body class="login-bg">
-    <div class="login">
-        <div class="message">Welcome You Login</div>
-        <div id="darkbannerwrap"></div>
-        
-        <form method="post"  class="layui-form" id="fmLogin" >
-            <input id="un" name="loginName" placeholder="用户名" value=""  type="text" lay-verify="required" class="layui-input" >
-            <hr class="hr15">
-			
-            <input name="password" id="pwd" lay-verify="required" value="" placeholder="密码"  type="password" class="layui-input">
-            <hr class="hr15">
-            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit" onclick="login()">
-            <hr class="hr20" >
-        </form>
-    </div>
-
-    <script>
-        function login(){
-            layui.use('form', function(){
-                var form = layui.form;
-                form.on('submit(login)', function(data){
-                    $.post(globalData.server+"/users/login",$("#fmLogin").serialize(),function(res){
-                        if(res.success==true){
+	<head>
+		<meta charset="UTF-8">
+		<title>千行物流管理系统后台登录</title>
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="./css/font.css">
+		<link rel="stylesheet" href="./css/xadmin.css">
+		<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script src="./lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/global.js"></script>
+		<style type="text/css">
+			a {
+				text-decoration: underline;
+			}
+		</style>
+		<script>
+			function login(){
+				if($("#un").val()==""){
+					layer.msg("用户名不能为空！！!");
+				}
+				 if($("#pwd").val()==""){
+					layer.msg("密码不能为空！！!");
+				} 
+	                $.post(globalData.server+"/users/login",$("#fmLogin").serialize(),function(res){
+	                    if(res.success==true){
 							layer.msg("登录成功!");
-                            sessionStorage.setItem("tokenId",res.tokenId);
-                            globalData.setUserInfo("",$("#un").val(),"")
-                            window.location.href = "index.html";
-                        }else{
-                            layer.msg(res.message);
-                        }
-                    },'json');
-                    return false;
-                });
-            });
-        }
-    </script>
-    <!-- 底部结束 -->
-</body>
+	                        sessionStorage.setItem("tokenId",res.tokenId);
+	                        globalData.setUserInfo("",$("#un").val(),"");
+							sessionStorage.setItem("userImage",res.userImage);
+							sessionStorage.setItem("id", res.id);
+	                        window.location.href = "index.html";
+	                    }else{
+	                        layer.msg(res.message);
+	                    }
+	                },'json');
+	                return false;
+	    }
+		
+		document.onkeydown = function(){
+				if(window.event && window.event.keyCode == 123) {
+					layer.msg("当前页面关乎安全问题，F12已被禁用！");
+					event.keyCode=0;
+					event.returnValue=false;
+				}
+				if(window.event && window.event.keyCode == 13) {
+					window.event.keyCode = 505;
+				}
+				if(window.event && window.event.keyCode == 8) {
+					layer.msg(str+"\n请使用Del键进行字符的删除操作！");
+					window.event.returnValue=false;
+				}
+		 }
+	</script>
+	</head>
+	<body class="login-bg">
+		<div class="login">
+			<div class="message">Welcome You Login</div>
+			<div id="darkbannerwrap"></div>
+
+			<form method="post" class="layui-form" id="fmLogin">
+				<input id="un" name="loginName" placeholder="用户名" value="" type="text" lay-verify="required" class="layui-input">
+				<hr class="hr15">
+				<input name="password" id="pwd" lay-verify="required" value="" placeholder="密码" type="password" class="layui-input">
+				<hr class="hr15">
+				<p class="login_p"><a style="color: #007DDB;font-size: 14px;" href="noteLogin.html">短信登陆</a>
+					<!-- &nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<a
+					 style="color: #007DDB;font-size: 14px;" href="password.html">找回密码</a></p> -->
+					<hr class="hr15">
+					<button type="button" style="width:100%;height: 50px;font-size:16px ;" class="layui-btn" onclick="login()">登录</button>
+					<hr class="hr20">
+			</form>
+		</div>
+		<!-- 底部结束 -->
+	</body>
 </html>

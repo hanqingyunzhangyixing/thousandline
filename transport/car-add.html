@@ -1,143 +1,186 @@
 <!DOCTYPE html>
 <html>
-  
-  <head>
-    <meta charset="UTF-8">
-    <title>欢迎页面-X-admin2.0</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="../css/font.css">
-    <link rel="stylesheet" href="../css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="../js/xadmin.js"></script>
-	<script type="text/javascript" src="../js/global.js"></script>
-  </head>
-  
-  <body>
-    <div class="x-body">
-        <form class="layui-form" id="userAdd">
-		  <div class="layui-form-item">
-		      <label for="userName" class="layui-form-label">
-		          <span class="x-red">*</span>用户名
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userName" name="userName" required="required"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="password1" class="layui-form-label">
-		          <span class="x-red">*</span>密码
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="password" id="password" name="password" required="" lay-verify="pass"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		    <!--  <div class="layui-form-mid layui-word-aux">
-		         最低五个字符
-		      </div> -->
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userSex" class="layui-form-label">
-		          <span class="x-red">*</span>性别
-		      </label>
-		      <div class="layui-input-inline">
-		          <select id="userSex" name="userSex" class="valid">
-		            <option value="男">男</option>
-		            <option value="女">女</option>
-		          </select>
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userAge" class="layui-form-label">
-		          <span class="x-red">*</span>年龄
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userAge" name="userAge" required="required"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userPhone" class="layui-form-label">
-		          <span class="x-red">*</span>手机号
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userPhone" name="userPhone" required="required"
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userEmail" class="layui-form-label">
-		          <span class="x-red">*</span>邮箱
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userEmail" name="userEmail" required=""
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="userImage" class="layui-form-label">
-		          头像
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="userImage" name="userImage" 
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="roleId" class="layui-form-label">
-		          所属角色
-		      </label>
-		      <div class="layui-input-inline">
-		          <input type="text" id="roleId" name="roleId" 
-		          autocomplete="off" class="layui-input">
-		      </div>
-		  </div>
-		  <div class="layui-form-item">
-		      <label for="L_repass" class="layui-form-label">
-		      </label>
-		      <button  class="layui-btn" lay-filter="add" lay-submit="" type="submit">
-		          增加
-		      </button>
-		  </div> 
-      </form>
-    </div>
-    <script>
-        layui.use(['form','layer'], function(){
-            $ = layui.jquery;
-          var form = layui.form,
-		  layer = layui.layer;
-          //监听提交
-          form.on('submit(add)',function(data){
-			$.post(globalData.server+"/users/save",$("#userAdd").serialize(),function(res){
-			    if(res==true){
-					console.log(data);
-					//发异步，把数据提交给php
-					layer.alert("增加成功", {icon: 6},function () {
-					    // 获得frame索引
-					    var index = parent.layer.getFrameIndex(window.name);
-					    //关闭当前frame
-					    parent.layer.close(index);
-						parent.location.reload();
-					});
-			    }else{
-			        console.log(data);
-			        //发异步，把数据提交给php
-			        layer.alert("增加失败", {icon: 5},function () {
-			            // 获得frame索引
-			            var index = parent.layer.getFrameIndex(window.name);
-			            //关闭当前frame
-			            parent.layer.close(index);
-			        });
-			    }
-			},'json');
-			return false;
-          }); 
-        });
-    </script>
-  </body>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>欢迎页面-X-admin2.0</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+		<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../css/font.css">
+		<link rel="stylesheet" href="../css/xadmin.css">
+		<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/xadmin.js"></script>
+		<script type="text/javascript" src="../js/global.js"></script>
+	</head>
+	<script type="text/javascript">
+		layui.use('laydate', function() {
+			var laydate = layui.laydate;
+			//执行一个laydate实例
+			laydate.render({
+				elem: '#safeTime', //指定元素
+				type: 'datetime'
+			});
+		});
+	</script>
+	<script>
+
+		var tokenId=globalData.getToken();
+  			$(function(){
+  				$("#token").val(tokenId);
+  			})
+  	        layui.use(['form','layer'], function(){
+  	          $ = layui.jquery;
+  	          var form = layui.form,layer = layui.layer;
+  	          //监听提交
+  	          form.on('submit(add)',function(data){
+  				$.post(globalData.server+"cars/insertCars",$("#carAdd").serialize(),function(res){
+  				    if(res==true){
+  						console.log(data);
+  						//发异步，把数据提交给php
+  						layer.alert("增加成功", {icon: 6},function () {
+  						    // 获得frame索引
+  						    var index = parent.layer.getFrameIndex(window.name);
+  						    //关闭当前frame
+  						    parent.layer.close(index);
+  							parent.location.reload();
+  						});
+  				    }else{
+  				        console.log(data);
+  				        //发异步，把数据提交给php
+  				        layer.alert("增加失败", {icon: 5},function () {
+  				            // 获得frame索引
+  				            var index = parent.layer.getFrameIndex(window.name);
+  				            //关闭当前frame
+  				            parent.layer.close(index);
+  				        });
+  				    }
+  				},'json');
+  				return false;
+  	          }); 
+  	        });
+  	    </script>
+	<body>
+		<div class="x-body">
+			<form class="layui-form" id="carAdd">
+
+				<div class="layui-form-item">
+					<input type="hidden" id="token" />
+					<label for="carNumber" class="layui-form-label">
+						<span class="x-red">*</span>车牌号
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="carNumber" name="carNumber" lay-verify="required" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="carNo" class="layui-form-label">
+						<span class="x-red">*</span>车辆编号
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="carNo" name="carNo" required="required" lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="zaiZhong" class="layui-form-label">
+						<span class="x-red">*</span>车辆载重
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="zaiZhong" name="zaiZhong" required="required" lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="brand" class="layui-form-label">
+						<span class="x-red">*</span>车辆品牌
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="brand" name="brand" lay-verify="required" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="cartype" class="layui-form-label">
+						<span class="x-red">*</span>车辆类型
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="cartype" name="cartype" lay-verify="required" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="safeTime" class="layui-form-label">
+						<span class="x-red">*</span>车辆保险日期
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="safeTime" lay-verify="required" name="safeTime" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="carMasterName" class="layui-form-label">
+						<span class="x-red">*</span>车主姓名
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="carMasterName" lay-verify="required" name="carMasterName" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="carMasterPhone" class="layui-form-label">
+						<span class="x-red">*</span>车主电话
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="carMasterPhone" lay-verify="phone" name="carMasterPhone" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="identityCard" class="layui-form-label">
+						<span class="x-red">*</span>车主证件号
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="identityCard" lay-verify="identity" name="identityCard" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="carMasterAddress" class="layui-form-label">
+						<span class="x-red">*</span>车主住址
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="carMasterAddress" lay-verify="required" name="carMasterAddress" required="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label for="status" class="layui-form-label">
+						<span class="x-red">*</span>车辆运输状态
+					</label>
+					<div class="layui-input-inline">
+						<select id="status" name="status">
+							<option value="">请选择状态</option>
+							<option value="0">未工作</option>
+							<option value="1">工作中</option>
+							<option value="2">工作完成，但未返程</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="remark" class="layui-form-label">
+						备注
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="remark" name="remark" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label for="L_repass" class="layui-form-label">
+					</label>
+					<button class="layui-btn" lay-filter="add" lay-submit="" type="submit">
+						增加
+					</button>
+
+				</div>
+			</form>
+		</div>
+
+	</body>
 
 </html>

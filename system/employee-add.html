@@ -162,8 +162,11 @@
               </form>
             </div>
         	<script type="text/javascript">
-        		layui.use('laydate', function(){
+        		layui.use(['form','layer','jquery','laydate','table'], function(){
         		  var laydate = layui.laydate;
+				  var table = layui.table;
+				  $ = layui.jquery;
+				  var form=layui.form;
         			//执行一个laydate实例
         			laydate.render({
         			  elem: '#hiredate' ,//指定元素
@@ -174,6 +177,18 @@
         			  elem: '#birthday' ,//指定元素
         			  type: 'datetime'
         			});
+					
+					 $.post(globalData.server+"departments/findAll", {}, function (res) {
+								if (res.length> 0) {
+									$("#departNo").append("<option value=''>--请选择--</option>");
+									for (var i = 0; i < res.length; i++) {
+										var item = res[i];
+										$("<option value=" + item.departNo + ">" + item.departName + "</option>").appendTo($("#departNo"));
+										form.render();
+									}
+								}
+							}, 'json');
+					 	
         		});
         		
         	</script>

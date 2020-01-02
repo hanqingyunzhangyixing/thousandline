@@ -10,84 +10,86 @@
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="../css/font.css">
     <link rel="stylesheet" href="../css/xadmin.css">
+	<link rel="stylesheet" href="../resources/layui/css/layui.css"/>
     <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="../js/xadmin.js"></script>
     <script src="../js/global.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript" src="../js/loginFilter.js"></script>
-    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
-    <link rel="stylesheet" href="../js/easyui/themes/bootstrap/easyui.css" type="text/css" />
+    <script type="text/javascript" src="../resources/layui/layui.js"></script>
   </head>
-  <script type="text/javascript">
-    $(function() {
-      searchUsers();
-    })
-
-    function searchUsers() {
-      $("#userInfo").datagrid({
-        method: 'post',
-        url: globalData.server + 'users/findAll'//调用数据接口
-      });
-    }
-	/* 状态 */
-	function getstate(value, row, index){
-		return "<span class='layui-btn layui-btn-normal layui-btn-mini'>已启用</span>";
-	}
-	/* 按钮 */
-	function anniu(value, row, index){
-		return "<a onclick='member_stop(this,'10001')' href='javascript:;' title='启用'> <i class='layui-icon'>&#xe601;</i> </a>"
-              +"<a title='编辑'  onclick='x_admin_show('编辑','member-edit.html',600,400)' href='javascript:;'> <i class='layui-icon'>&#xe642;</i> </a>"
-               +"<a onclick='x_admin_show('修改密码','member-password.html',600,400)' title='修改密码' href='javascript:;'> <i class='layui-icon'>&#xe631;</i> </a>"
-              +" <a title='删除' onclick='member_del(this,'要删除的id')' href='javascript:;'> <i class='layui-icon'>&#xe640;</i> </a>";
-	}
+ <script>
+  layui.use(['table'],function(){
+    var table = layui.table;
+    
+	
+	/* 表格渲染 */
+    table.render({
+      elem: '#test',
+      url:globalData.server+"/orders/getOrders",
+	  height:500,
+      cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+	  parseData: function (res) { //res 即为原始返回的数据
+					  return {
+						  "code": 0, //解析接口状态
+						  "count": res.count, //解析数据长度
+						  "data": res.data //解析数据列表
+					  };
+	   },
+	  page: true, //开启分页
+      cols: [[
+		  //开启复选框  fixed：开启固定列
+		 {type:'checkbox', fixed: 'left'}
+        ,{field:'orderNo', width:120, title: '订单编号',align:'center',fixed: 'left'}
+        ,{field:'cargoName', width:120, title: '货物名称',align:'center'}
+        ,{field:'orderCreateTime', width:120, title: '订单创建时间',align:'center'}
+        ,{field:'cricuitsName', width:120, title: '线路名称',align:'center'}
+        ,{field:'driverName', width:120,title: '司机名称',align:'center'}
+		,{field:'carNumber',width:120, title: '车牌号',align:'center'}
+		,{field:'string2',width:280,align:'center', title: '站点',fixed: 'right',templet: function (d) {
+                        return d.circuits.string2
+                    }}
+		,{field:'caozuo',width:120, title: '操作',align:'center', toolbar: '#barDemo',fixed:'right'}
+      ]]
+    });
+	
+	 //监听行工具事件
+	   table.on('tool(test)', function(obj){
+	     var data = obj.data.circuits;
+	     if(obj.event === 'detail'){
+			  var statement=data.string2;
+			 
+			 var ind=layer.open({
+			 			type:2,
+						title:'跟踪详情',
+			 			area:['600px','500px'],
+			 			offset:'100px',
+			 			shadeClose:true,
+			 			maxmin:true,
+			 			content:'huakuai.html',
+			 			success: function (layero, ind) {
+			 					// 获取子页面的iframe
+			 					var iframe = window['layui-layer-iframe' + ind];
+			 					// 向子页面的全局函数child传参
+			 					iframe.child(statement);
+			 			     }
+			 		 });
+	        } 
+	   });  
+  });
   </script>
+  
+ <style type="text/css">
+	  .layui-table-page{
+	  text-align: center
+	  } 
+  </style> 
   <body>
-	  <div class="x-body">
-	     <div class="layui-row">
-	          <form class="layui-form layui-col-md12 x-so">
-	            <input class="layui-input" placeholder="开始日" name="start" id="start">
-	            <input class="layui-input" placeholder="截止日" name="end" id="end">
-	            <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-	            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;" href="javascript:location.replace(location.href);" title="刷新">
-				  <i class="layui-icon" style="line-height:30px">ဂ</i></a>
-	          </form>
-	        </div>
-	        <xblock>
-	          <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-	          <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
-	        </xblock>
-  <div class="easyui-layout" id="productImgs_list" style="height: 650px;">
-    <table id="userInfo" class="easyui-datagrid" title="用户信息" data-options="rownumbers:true,height:'60%',fitColumns:true,pageSize:5,singleSelect:true,collapsible:true,pagination:true,pageList:[5,10,20],toolbar:'#datagridBtn'">
-      <thead>
-      <tr>
-        <th data-options="field:'id',width:100,align:'center'"hidden="true"></th>
-        <th data-options="field:'orderNo',title:'订单编号',width:130,align:'center'"></th>
-        <th data-options="field:'senderName',title:'发货方',width:120,align:'center'"></th>
-        <th data-options="field:'senderPhone',title:'发货方联系方式',width:160,align:'center'"></th>
-        <th data-options="field:'senderAddress',title:'发货地址',width:160,align:'center'"></th>
-        <th data-options="field:'receiver',title:'收货方',width:120,align:'center'"></th>
-        <th data-options="field:'receiverPhone',title:'收货方联系方式',width:160,align:'center'"></th>
-        <th data-options="field:'receiverAddress',title:'收货方地址',width:160,align:'center'"></th>
-        <th data-options="field:'status',title:'订单状态',width:120,align:'center',forrmatter: getstate"></th>
-        <th data-options="field:'cargoNo',title:'货物编号',width:140,align:'center'"></th>
-        <th data-options="field:'cargoName',title:'货物名称',width:150,align:'center'"></th>
-        <th data-options="field:'tiaoma',title:'条码',width:150,align:'center'"></th>
-        <th data-options="field:'cargoType',title:'货物类型',width:130,align:'center'"></th>
-		<th data-options="field:'cargoWeight',title:'货物重量',width:100,align:'center'"></th>
-		<th data-options="field:'orderCreateTime',title:'订单创建时间',width:140,align:'center'"></th>
-		<th data-options="field:'orderEndTime',title:'订单完成时间',width:140,align:'center'"></th>
-		<th data-options="field:'cargoTiJi',title:'货物体积',width:100,align:'center'"></th>
-		<th data-options="field:'packingUnit',title:'包装单位',width:100,align:'center'"></th>
-		<th data-options="field:'cargoMember',title:'货物数量',width:100,align:'center'"></th>
-		<th data-options="field:'cricuitsNo',title:'线路编号',width:150,align:'center'"></th>
-		<th data-options="field:'remark',title:'备注',width:200,align:'center'"></th>
-		<th data-options="field:'caozuo',title:'操作',width:120,align:'center',formatter: anniu"></th>
-      </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
+	    <table class="layui-hide" id="test" lay-filter="test"></table>
+		   
+		 <script type="text/html" id="barDemo">
+			 <button type="button" style="width:100%;height: 40px;font-size:14px ;" lay-event="detail" class="layui-btn">货物跟踪</button>
+		</script> 
   </body>
 
 </html>

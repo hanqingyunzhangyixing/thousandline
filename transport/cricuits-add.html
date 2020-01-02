@@ -52,22 +52,14 @@
 	<body>
 		<div class="x-body">
 		       <form class="layui-form" id="circuitsAdd">
-			  <div class="layui-form-item">
-			      <label for="circuitsNo" class="layui-form-label">
-			          <span class="x-red">*</span>线路编号
-			      </label>
-			      <div class="layui-input-inline">
-			          <input type="text" id="circuitsNo" name="circuitsNo" required="required"
-			          autocomplete="off" class="layui-input">
-			      </div>
-			  </div>
+			  
 			  <div class="layui-form-item">
 			      <label for="circuitsName" class="layui-form-label">
 			          <span class="x-red">*</span>线路名称
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="circuitsName" name="circuitsName" required="required"
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  <div class="layui-form-item">
@@ -76,7 +68,7 @@
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="beginProvince" name="beginProvince" required="required"
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  <div class="layui-form-item">
@@ -85,7 +77,7 @@
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="beginCity" name="beginCity" required="required"
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  <div class="layui-form-item">
@@ -93,8 +85,8 @@
 			          <span class="x-red">*</span>出发地所属县区
 			      </label>
 			      <div class="layui-input-inline">
-			          <input type="text" id="beginRegion" name="beginRegion" required=""
-			          autocomplete="off" class="layui-input">
+			          <input type="text" id="beginRegion" name="beginRegion" required="required"
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  <div class="layui-form-item">
@@ -103,7 +95,7 @@
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="endProvince" name="endProvince" 
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" required="required" lay-verify="required">
 			      </div>
 			  </div>
 			  
@@ -114,7 +106,7 @@
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="endCity" name="endCity" required="required"
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  <div class="layui-form-item">
@@ -122,8 +114,8 @@
 			          <span class="x-red">*</span>目的地所属县区
 			      </label>
 			      <div class="layui-input-inline">
-			          <input type="text" id="endRegion" name="endRegion" required=""
-			          autocomplete="off" class="layui-input">
+			          <input type="text" id="endRegion" name="endRegion" required="required"
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  
@@ -135,7 +127,7 @@
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="beginStation" name="beginStation" required="required"
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  <div class="layui-form-item">
@@ -143,8 +135,8 @@
 			          <span class="x-red">*</span>收货站
 			      </label>
 			      <div class="layui-input-inline">
-			          <input type="text" id="endStation" name="endStation" required=""
-			          autocomplete="off" class="layui-input">
+			          <input type="text" id="endStation" name="endStation" required="required"
+			          autocomplete="off" class="layui-input" lay-verify="required">
 			      </div>
 			  </div>
 			  
@@ -154,16 +146,7 @@
 			      </label>
 			      <div class="layui-input-inline">
 			          <input type="text" id="kilometres" name="kilometres" required="required"
-			          autocomplete="off" class="layui-input">
-			      </div>
-			  </div>
-			  <div class="layui-form-item">
-			      <label for="driverId" class="layui-form-label">
-			          <span class="x-red">*</span>司机名称
-			      </label>
-			      <div class="layui-input-inline">
-			          <input type="text" id="driverId" name="driverId" required=""
-			          autocomplete="off" class="layui-input">
+			          autocomplete="off" class="layui-input" lay-verify="number">
 			      </div>
 			  </div>
 			  

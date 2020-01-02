@@ -1,4 +1,5 @@
 $(function () {
+	initMenu();
     //加载弹出层
     layui.use(['form','element'],
     function() {
@@ -169,3 +170,55 @@ function x_admin_close(){
 }
 
 
+/*初始化菜单*/
+function initMenu(){
+	$.ajax({
+	    type:"post",
+		async:false,
+		url:globalData.server+"/modules/getModulesByUserName",
+		data:{userName:globalData.getCurUName(),tokenId:globalData.getToken()},
+	    dataType:"json",
+	    success:function(data){
+	        //先添加所有的主材单
+	        $.each(data,function(i,obj){
+	            var content='<li>';
+	            content+='<a href="javascript:;"><i class="iconfont">&#xe726;</i><cite>'+obj.meunTitle+'</cite><i class="iconfont nav_right">&#xe697;</i></a>';
+	            //这里是添加所有的子菜单
+	            content+=loadchild(obj);
+				//alert(content);
+	            content+='</li>';
+	            $("#nav").append(content);
+	        });
+	    },
+	    error:function(jqXHR){
+	        alert("发生错误："+ jqXHR.status);
+	    }
+	});
+}
+
+  //组装子菜单的方法
+   function loadchild(obj){
+	if(obj==null){
+		return;
+	}	 
+	var content='';
+	if(obj.childrenList!=null && obj.childrenList.length>0){
+		content+='<ul class="sub-menu">';
+	}else{
+		content+='</ul>';
+	}
+	if(obj.childrenList!=null && obj.childrenList.length>0){
+		$.each(obj.childrenList,function(i,note){
+			content+='<li>';
+			content+='<a _href="'+note.meunUrl+'"><i class="iconfont">&#xe6a7;</i><cite>'+note.meunTitle+'</cite></a>';
+			if(note.childrenList==null){
+				return;
+			}
+			content+=loadchild(note);
+			content+='</li>';
+		});
+		content+='</ul>';
+	}
+	console.log(content);
+	return content;
+}
